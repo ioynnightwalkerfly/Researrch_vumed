@@ -1,0 +1,156 @@
+/* assets/css/style_globe.css */
+
+/* COLOURS */
+:root {
+    --colour-cyan: #00FFD3;
+    --colour-white: #FFFFFF;
+    --colour-black: #000000;
+    --colour-start: #1E8CE4;
+    --colour-end: #00F3CA;
+}
+
+/* GLOBE CONTAINER */
+.globe {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--colour-start);
+    background: -moz-linear-gradient(-45deg, var(--colour-start) 0%, var(--colour-end) 100%);
+    background: -webkit-linear-gradient(-45deg, var(--colour-start) 0%, var(--colour-end) 100%);
+    background: linear-gradient(135deg, var(--colour-start) 0%, var(--colour-end) 100%);
+}
+
+.globe .globe-list {
+    z-index: 10;
+    position: absolute;
+    left: 0;
+    top: 0;
+    list-style: none;
+    display: none;
+    opacity: 0;
+    transition: opacity 3s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+}
+
+.globe .globe-list.active {
+    opacity: 1;
+}
+
+.globe .globe-list > li {
+    opacity: 0.4;
+    position: absolute;
+    margin-left: -8px;
+    margin-top: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--colour-cyan);
+    transition: opacity 1s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+}
+
+.globe .globe-list > li.active {
+    opacity: 1;
+    margin-left: -12px;
+    margin-top: -12px;
+    width: 24px;
+    height: 24px;
+}
+
+.globe .globe-list > li:before {
+    content: "";
+    opacity: 0.5;
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--colour-cyan);
+    animation: pulse 2s linear infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { opacity: 0.5; }
+    100% { opacity: 0; transform: scale(2); }
+}
+
+.globe .globe-list > li.active:before {
+    margin-left: -12px;
+    margin-top: -12px;
+    width: 24px;
+    height: 24px;
+}
+
+.globe .globe-list > li.active,
+.globe .globe-list > li.active:before {
+    background: var(--colour-white);
+}
+
+.globe .globe-list .text {
+    position: absolute;
+    opacity: 0.8;
+    right: 21px; /* 16px + 5px */
+    top: 50%;
+    display: block;
+    font-size: 14px;
+    line-height: 14px;
+    font-weight: 600;
+    text-align: right;
+    text-shadow: -1px -1px 0 var(--colour-black), 1px -1px 0 var(--colour-black), -1px 1px 0 var(--colour-black), 1px 1px 0 var(--colour-black);
+    color: var(--colour-white);
+    white-space: nowrap;
+    transform: translateY(-50%);
+}
+
+.globe .globe-list > li.active .text {
+    opacity: 1;
+    right: 29px; /* 24px + 5px */
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: 700;
+}
+
+.globe .globe-canvas {
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.globe svg {
+    height: 100%;
+    width: 100%;
+    opacity: .3;
+    animation: rotation 10s linear infinite;
+}
+
+.svg-wrapper {
+    opacity: 0;
+    display: inline-block;
+    position: absolute;
+    width: 80vh; /* Adjust as needed */
+    height: 80%;
+    left: 0;
+    right: 0;
+    top: 10%;
+    margin: auto;
+    transform: scale(0.5);
+    transition: opacity 1s ease-out 1.6s, transform 1s ease-out 1.6s;
+    pointer-events: none; /* Let clicks pass through to canvas if needed */
+}
+
+.svg-wrapper.active {
+    opacity: 1;
+    transform: none;
+}
+
+@keyframes rotation {
+    0% { transform: scaleX(-1) rotate(360deg); }
+    100% { transform: scaleX(-1) rotate(0deg); }
+}

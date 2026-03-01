@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนนักวิจัย - Research Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #F3F4F6;
+            color: #1F2937;
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #D1D5DB;
+            background-color: #F9FAFB;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2563EB;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-error {
+            border-color: #EF4444;
+            background-color: #FEF2F2;
+        }
+
+        /* Error Style */
+
+        .step-active {
+            background-color: #2563EB;
+            color: white;
+            border-color: #2563EB;
+        }
+
+        .step-inactive {
+            background-color: white;
+            color: #9CA3AF;
+            border-color: #E5E7EB;
+        }
+
+        .step-completed {
+            background-color: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-4 px-6 shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/20 w-10 h-10 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                    <i class="fa-solid fa-flask text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">ระบบฐานข้อมูลนักวิจัย</h1>
+                    <p class="text-xs text-blue-200">Research Management System</p>
+                </div>
+            </div>
+            <a href="login.html" class="text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> กลับหน้าหลัก
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 md:p-8">
+        <div class="max-w-4xl mx-auto">
+
+            <div class="mb-8 relative z-0">
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
+                <div class="flex justify-between px-2">
+                    <div class="flex flex-col items-center cursor-pointer group" onclick="trySwitchStep(1)">
+                        <div id="ind-1"
+                            class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold step-active transition bg-white">
+                            1</div>
+                        <span
+                            class="text-xs font-semibold mt-2 bg-gray-50 px-2 rounded text-gray-600">ข้อมูลส่วนตัว</span>
+                    </div>
+                    <div class="flex flex-col items-center cursor-pointer group" onclick="trySwitchStep(2)">
+                        <div id="ind-2"
+                            class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold step-inactive transition bg-white">
+                            2</div>
+                        <span class="text-xs font-semibold mt-2 bg-gray-50 px-2 rounded text-gray-600">การอบรม</span>
+                    </div>
+                    <div class="flex flex-col items-center cursor-pointer group" onclick="trySwitchStep(3)">
+                        <div id="ind-3"
+                            class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold step-inactive transition bg-white">
+                            3</div>
+                        <span
+                            class="text-xs font-semibold mt-2 bg-gray-50 px-2 rounded text-gray-600">บัญชีผู้ใช้</span>
+                    </div>
+                    <div class="flex flex-col items-center cursor-pointer group">
+                        <div id="ind-4"
+                            class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold step-inactive transition bg-white">
+                            4</div>
+                        <span class="text-xs font-semibold mt-2 bg-gray-50 px-2 rounded text-gray-600">ยืนยัน</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <form id="regisForm" enctype="multipart/form-data" novalidate>
+
+                    <div id="step-1" class="p-6 md:p-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-blue-600 pl-4">1.
+                            ข้อมูลผู้ใช้ (Personal Info)</h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold mb-1">เลขบัตรประจำตัวประชาชน <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="id_card_number" id="id_card_number" class="input-field"
+                                    placeholder="กรอกตัวเลข 13 หลัก" maxlength="13" inputmode="numeric"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <p class="text-xs text-gray-400 mt-1">ต้องระบุครบ 13 หลัก (ตัวเลขเท่านั้น)</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">คำนำหน้า (ไทย)</label>
+                                <select name="prefix_th" id="prefix_th" class="input-field" onchange="autoFillPrefix()"
+                                    required>
+                                    <option value="">-- เลือก --</option>
+                                    <option value="นาย">นาย</option>
+                                    <option value="นาง">นาง</option>
+                                    <option value="นางสาว">นางสาว</option>
+                                    <option value="ดร.">ดร.</option>
+                                    <option value="ผศ.">ผศ.</option>
+                                    <option value="รศ.">รศ.</option>
+                                    <option value="ศ.">ศ.</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1">ชื่อ (ไทย) <span
+                                            class="text-red-500">*</span></label>
+                                    <input type="text" name="firstname_th" class="input-field" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1">นามสกุล (ไทย) <span
+                                            class="text-red-500">*</span></label>
+                                    <input type="text" name="lastname_th" class="input-field" required>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">Prefix (Eng)</label>
+                                <input type="text" name="prefix_eng" id="prefix_eng" class="input-field bg-gray-100"
+                                    readonly>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1">First Name (Eng)</label>
+                                    <input type="text" name="firstname_eng" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1">Last Name (Eng)</label>
+                                    <input type="text" name="lastname_eng" class="input-field">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">อีเมล (Email) <span
+                                        class="text-red-500">*</span></label>
+                                <input type="email" name="email" class="input-field" required>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1">เบอร์โทรศัพท์</label>
+                                    <input type="tel" name="phone_office" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold mb-1">เบอร์มือถือ</label>
+                                    <input type="tel" name="mobile_phone" class="input-field">
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold mb-1">สังกัด / คณะวิชา <span
+                                        class="text-red-500">*</span></label>
+                                <select name="faculty" id="faculty-select" class="input-field mb-2"
+                                    onchange="toggleOtherFaculty(this)" required>
+                                    <option value="">-- กรุณาเลือก --</option>
+                                    <option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option>
+                                    <option value="คณะพยาบาลศาสตร์">คณะพยาบาลศาสตร์</option>
+                                    <option value="คณะสาธารณสุขศาสตร์">คณะสาธารณสุขศาสตร์</option>
+                                    <option value="คณะศึกษาศาสตร์">คณะศึกษาศาสตร์</option>
+                                    <option value="คณะนิติศาสตร์">คณะนิติศาสตร์</option>
+                                    <option value="คณะนิเทศศาสตร์">คณะนิเทศศาสตร์</option>
+                                    <option value="คณะวิศวกรรมศาสตร์และสถาปัตยกรรมศาสตร์">
+                                        คณะวิศวกรรมศาสตร์และสถาปัตยกรรมศาสตร์</option>
+                                    <option value="คณะแพทยศาสตร์">คณะแพทยศาสตร์</option>
+                                    <option value="รพ.หนองคาย">รพ.หนองคาย</option>
+                                    <option value="other">อื่นๆ (โปรดระบุ)</option>
+                                </select>
+                                <input type="text" name="faculty_other" id="faculty-other"
+                                    class="input-field hidden-section" placeholder="ระบุชื่อหน่วยงานของคุณ...">
+
+                                <div class="mt-2">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" name="is_external" class="w-4 h-4 accent-blue-600">
+                                        <span
+                                            class="text-sm font-bold text-blue-800">ข้าพเจ้าเป็นบุคลากรภายนอกมหาวิทยาลัยวงษ์ชวลิตกุล</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold mb-2">คุณสมบัติ</label>
+                                <div class="flex flex-wrap gap-4 text-sm">
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_health"
+                                            class="accent-indigo-500"> <span>บุคลากรด้านสุขภาพ</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_social"
+                                            class="accent-indigo-500"> <span>นักสังคมศาสตร์/มนุษยศาสตร์</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox"
+                                            name="qual_non_med" class="accent-indigo-500">
+                                        <span>ผู้ที่ไม่ได้ประกอบวิชาชีพแพทย์</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_comm"
+                                            class="accent-indigo-500"> <span>ตัวแทนชุมชน</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_law"
+                                            class="accent-indigo-500"> <span>นักกฎหมาย</span></label>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                                <label class="block text-sm font-bold text-indigo-900 mb-2">บทบาท (เลือกอย่างน้อย 1
+                                    อย่าง) <span class="text-red-500">*</span></label>
+                                <div class="flex flex-wrap gap-6">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="role_researcher" class="w-5 h-5 accent-indigo-600">
+                                        <span>นักวิจัย (Researcher)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="role_coordinator" class="w-5 h-5 accent-amber-500">
+                                        <span>ผู้ประสานงานโครงการ (Coordinator)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold mb-2">แนบไฟล์ประวัติผู้วิจัย (CV) <span
+                                        class="text-red-500">*</span></label>
+                                <div id="cv-upload-box"
+                                    class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                                    <input type="file" name="cv_file" id="cv_file"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onchange="showFileName(this)" required>
+                                    <div class="space-y-1">
+                                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400"></i>
+                                        <div class="text-sm text-gray-600">
+                                            <span class="font-medium text-blue-600">คลิกเพื่ออัปโหลด</span>
+                                        </div>
+                                        <p class="text-xs text-red-500" id="file-name-display">*จำเป็นต้องแนบไฟล์
+                                            (เอกสารต้องลงนามและลงวันที่)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end">
+                            <button type="button" onclick="nextStep(2)"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition">
+                                ถัดไป <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="step-2" class="hidden-section p-6 md:p-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">2.
+                            ข้อมูลการอบรม (Training)</h2>
+
+                        <div id="training-container" class="space-y-4">
+                        </div>
+
+                        <button type="button" onclick="addTrainingRow()"
+                            class="mt-4 w-full border-2 border-dashed border-emerald-300 text-emerald-600 font-bold py-3 rounded-xl hover:bg-emerald-50 transition">
+                            <i class="fa-solid fa-plus-circle"></i> เพิ่มข้อมูลการอบรม
+                        </button>
+                        <p class="text-xs text-red-500 mt-2">*หมายเหตุ: เอกสารแนบจะต้องลงนามและวันที่กำกับด้วย</p>
+
+                        <div class="mt-8 flex justify-between">
+                            <button type="button" onclick="prevStep(1)"
+                                class="text-gray-500 hover:text-gray-800 font-bold px-4">ย้อนกลับ</button>
+                            <button type="button" onclick="nextStep(3)"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition">
+                                ถัดไป <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="step-3" class="hidden-section p-6 md:p-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-amber-500 pl-4">3.
+                            บัญชีผู้ใช้ (Account)</h2>
+
+                        <div class="max-w-md mx-auto space-y-6">
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">ชื่อผู้ใช้ (Username) <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="username" id="username" class="input-field" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">รหัสผ่าน <span
+                                        class="text-red-500">*</span></label>
+                                <input type="password" name="password" id="password" class="input-field"
+                                    placeholder="อย่างน้อย 8 ตัวอักษร" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">ยืนยันรหัสผ่าน <span
+                                        class="text-red-500">*</span></label>
+                                <input type="password" id="confirm_password" class="input-field" required>
+                                <p id="password-match-msg" class="text-xs mt-1"></p>
+                            </div>
+                        </div>
+
+                        <div class="mt-12 flex justify-between">
+                            <button type="button" onclick="prevStep(2)"
+                                class="text-gray-500 hover:text-gray-800 font-bold px-4">ย้อนกลับ</button>
+                            <button type="button" onclick="nextStep(4)"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition">
+                                ถัดไป <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="step-4" class="hidden-section p-6 md:p-10">
+                        <div class="text-center mb-6">
+                            <div
+                                class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full mx-auto flex items-center justify-center text-3xl mb-3">
+                                <i class="fa-solid fa-file-invoice"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">ตรวจสอบข้อมูล (Confirmation)</h2>
+                            <p class="text-gray-500">กรุณาตรวจสอบความถูกต้องของข้อมูลทั้งหมดก่อนบันทึก</p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden text-sm">
+
+                            <div class="p-4 border-b border-gray-200">
+                                <h3 class="font-bold text-blue-700 mb-3 uppercase text-xs tracking-wider">1.
+                                    ข้อมูลส่วนตัว</h3>
+                                <div id="summary-personal"
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-y-2 text-gray-700">
+                                </div>
+                            </div>
+
+                            <div class="p-4 border-b border-gray-200">
+                                <h3 class="font-bold text-emerald-700 mb-3 uppercase text-xs tracking-wider">2.
+                                    ประวัติการอบรม</h3>
+                                <div id="summary-training" class="space-y-2">
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-gray-100">
+                                <h3 class="font-bold text-amber-700 mb-3 uppercase text-xs tracking-wider">3.
+                                    บัญชีผู้ใช้</h3>
+                                <div id="summary-account" class="grid grid-cols-1 md:grid-cols-2 gap-y-2 text-gray-700">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-between items-center">
+                            <button type="button" onclick="prevStep(3)"
+                                class="text-gray-500 hover:text-gray-800 font-bold px-4">แก้ไขข้อมูล</button>
+                            <button type="button" onclick="submitForm()"
+                                class="bg-green-600 hover:bg-green-700 text-white px-10 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">
+                                <i class="fa-solid fa-paper-plane mr-2"></i> ยืนยันการสมัคร
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentStep = 1;
+
+        // --- Navigation Functions ---
+        function nextStep(targetStep) {
+            if (validateStep(currentStep)) {
+                if (targetStep === 4) generateSummary();
+                showStep(targetStep);
+            }
+        }
+
+        function prevStep(targetStep) {
+            showStep(targetStep);
+        }
+
+        function trySwitchStep(step) {
+            // อนุญาตให้คลิกถอยหลังได้เสมอ แต่คลิกข้ามหน้าต้องผ่าน Validation ก่อน
+            if (step < currentStep) {
+                showStep(step);
+            } else if (step > currentStep) {
+                if (validateStep(currentStep)) {
+                    if (step === 4) generateSummary();
+                    showStep(step);
+                }
+            }
+        }
+
+        function showStep(step) {
+            // Hide all
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step-${i}`).classList.add('hidden-section');
+
+                // Update Indicators
+                const ind = document.getElementById(`ind-${i}`);
+                ind.className = 'w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold transition ';
+
+                if (i < step) {
+                    ind.classList.add('step-completed', 'border-emerald-500');
+                    ind.innerHTML = '<i class="fa-solid fa-check"></i>';
+                } else if (i === step) {
+                    ind.classList.add('step-active');
+                    ind.innerHTML = i;
+                } else {
+                    ind.classList.add('step-inactive');
+                    ind.innerHTML = i;
+                }
+            }
+            // Show Target
+            document.getElementById(`step-${step}`).classList.remove('hidden-section');
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- Validation Logic (STRICT) ---
+        function validateStep(step) {
+            let isValid = true;
+            let firstErrorInput = null;
+
+            // Helper to mark error
+            const setError = (input, isError) => {
+                if (isError) {
+                    input.classList.add('input-error');
+                    if (!firstErrorInput) firstErrorInput = input;
+                    isValid = false;
+                } else {
+                    input.classList.remove('input-error');
+                }
+            };
+
+            if (step === 1) {
+                // 1. Check ID Card (13 Digits)
+                const idCard = document.getElementById('id_card_number');
+                const idVal = idCard.value.replace(/[^0-9]/g, '');
+                if (idVal.length !== 13) {
+                    alert('กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก');
+                    setError(idCard, true);
+                } else {
+                    setError(idCard, false);
+                }
+
+                // 2. Check Required Text Fields
+                const requiredFields = ['firstname_th', 'lastname_th', 'email', 'faculty'];
+                requiredFields.forEach(name => {
+                    const el = document.querySelector(`[name="${name}"]`);
+                    if (!el.value.trim()) setError(el, true);
+                    else setError(el, false);
+                });
+
+                // 3. Check Faculty Other
+                const facSelect = document.getElementById('faculty-select');
+                const facOther = document.getElementById('faculty-other');
+                if (facSelect.value === 'other' && !facOther.value.trim()) {
+                    setError(facOther, true);
+                }
+
+                // 4. Check Roles (At least one)
+                const role1 = document.querySelector('[name="role_researcher"]');
+                const role2 = document.querySelector('[name="role_coordinator"]');
+                if (!role1.checked && !role2.checked) {
+                    alert('กรุณาเลือกบทบาทอย่างน้อย 1 อย่าง');
+                    isValid = false;
+                }
+
+                // 5. Check File (CV) - Mandatory
+                const fileInput = document.getElementById('cv_file');
+                const uploadBox = document.getElementById('cv-upload-box');
+                if (fileInput.files.length === 0) {
+                    alert('กรุณาแนบไฟล์ประวัติผู้วิจัย (CV)');
+                    uploadBox.classList.add('border-red-500', 'bg-red-50');
+                    isValid = false;
+                } else {
+                    uploadBox.classList.remove('border-red-500', 'bg-red-50');
+                }
+            }
+
+            if (step === 3) {
+                // Check Username & Password
+                const user = document.getElementById('username');
+                const pass = document.getElementById('password');
+                const confirm = document.getElementById('confirm_password');
+
+                setError(user, !user.value.trim());
+                setError(pass, pass.value.length < 8);
+                setError(confirm, confirm.value !== pass.value);
+
+                if (pass.value.length < 8) alert('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร');
+                else if (confirm.value !== pass.value) alert('รหัสผ่านยืนยันไม่ตรงกัน');
+            }
+
+            if (!isValid && firstErrorInput) {
+                firstErrorInput.focus();
+                firstErrorInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return isValid;
+        }
+
+        // --- Helper Functions ---
+        function showFileName(input) {
+            const display = document.getElementById('file-name-display');
+            const box = document.getElementById('cv-upload-box');
+            if (input.files && input.files[0]) {
+                display.textContent = 'ไฟล์ที่เลือก: ' + input.files[0].name;
+                display.className = 'text-xs text-green-600 font-bold mt-2';
+                box.classList.add('border-green-500', 'bg-green-50');
+                box.classList.remove('border-red-500', 'bg-red-50'); // clear error
+            }
+        }
+
+        const prefixMap = { 'นาย': 'Mr.', 'นาง': 'Mrs.', 'นางสาว': 'Ms.', 'ดร.': 'Dr.', 'ผศ.': 'Asst. Prof.', 'รศ.': 'Assoc. Prof.', 'ศ.': 'Prof.' };
+        function autoFillPrefix() {
+            const th = document.getElementById('prefix_th').value;
+            document.getElementById('prefix_eng').value = prefixMap[th] || '';
+        }
+
+        function toggleOtherFaculty(select) {
+            const otherInput = document.getElementById('faculty-other');
+            if (select.value === 'other') {
+                otherInput.classList.remove('hidden-section');
+                otherInput.focus();
+            } else {
+                otherInput.classList.add('hidden-section');
+            }
+        }
+
+        // --- Dynamic Training Rows ---
+        let trainingCount = 0;
+        function addTrainingRow() {
+            trainingCount++;
+            const container = document.getElementById('training-container');
+            const rowId = `training-row-${trainingCount}`;
+            const html = `
+                <div id="${rowId}" class="bg-gray-50 p-4 rounded-lg border border-gray-200 relative training-item">
+                    <button type="button" onclick="document.getElementById('${rowId}').remove()" class="absolute top-2 right-2 text-red-400 hover:text-red-600">
+                        <i class="fa-solid fa-times-circle"></i> ลบ
+                    </button>
+                    <h4 class="text-sm font-bold text-gray-500 mb-2">รายการที่ ${trainingCount}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
+                        <input type="text" name="trainings[${trainingCount}][course_th]" class="input-field t-course-th" placeholder="ชื่อหลักสูตร (ไทย)">
+                        <input type="text" name="trainings[${trainingCount}][course_eng]" class="input-field t-course-eng" placeholder="Course Name (Eng)">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="date" name="trainings[${trainingCount}][date]" class="input-field t-date">
+                        <input type="file" name="trainings[${trainingCount}][file]" class="input-field text-sm t-file">
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+        // Init first row
+        addTrainingRow();
+
+        // --- Generate Summary (Step 4) ---
+        function generateSummary() {
+            const formData = new FormData(document.getElementById('regisForm'));
+
+            // 1. Personal Info
+            let faculty = formData.get('faculty');
+            if (faculty === 'other') faculty = formData.get('faculty_other');
+
+            const roles = [];
+            if (formData.get('role_researcher')) roles.push('นักวิจัย');
+            if (formData.get('role_coordinator')) roles.push('ผู้ประสานงาน');
+
+            const idCard = formData.get('id_card_number');
+            const nameTh = `${formData.get('prefix_th')} ${formData.get('firstname_th')} ${formData.get('lastname_th')}`;
+            const email = formData.get('email');
+            const phone = formData.get('mobile_phone') || '-';
+            const cvFile = document.getElementById('cv_file').files[0]?.name || 'ไม่ได้แนบไฟล์';
+
+            document.getElementById('summary-personal').innerHTML = `
+                <p><span class="font-bold">เลขบัตร:</span> ${idCard}</p>
+                <p><span class="font-bold">ชื่อ-สกุล:</span> ${nameTh}</p>
+                <p><span class="font-bold">อีเมล:</span> ${email}</p>
+                <p><span class="font-bold">เบอร์โทร:</span> ${phone}</p>
+                <p><span class="font-bold">คณะ:</span> ${faculty}</p>
+                <p><span class="font-bold">บทบาท:</span> ${roles.join(', ')}</p>
+                <p class="text-blue-600"><span class="font-bold text-gray-700">CV:</span> <i class="fa-solid fa-file"></i> ${cvFile}</p>
+            `;
+
+            // 2. Training Info (Loop through DOM elements)
+            const trainingContainer = document.getElementById('summary-training');
+            trainingContainer.innerHTML = ''; // clear old
+            const trainingItems = document.querySelectorAll('.training-item');
+
+            if (trainingItems.length === 0) {
+                trainingContainer.innerHTML = '<p class="text-gray-400 italic">ไม่มีข้อมูลการอบรม</p>';
+            } else {
+                trainingItems.forEach((item, index) => {
+                    const th = item.querySelector('.t-course-th').value || '-';
+                    const date = item.querySelector('.t-date').value || '-';
+                    const file = item.querySelector('.t-file').files[0]?.name || 'ไม่แนบไฟล์';
+
+                    if (th !== '-') { // Show only filled items
+                        trainingContainer.innerHTML += `
+                            <div class="bg-white p-2 rounded border border-gray-100 flex justify-between items-center text-xs">
+                                <div>
+                                    <span class="font-bold text-gray-700">${index + 1}. ${th}</span>
+                                    <span class="text-gray-500 block">วันที่: ${date}</span>
+                                </div>
+                                <span class="text-emerald-600"><i class="fa-solid fa-paperclip"></i> ${file}</span>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            // 3. Account
+            const username = formData.get('username');
+            document.getElementById('summary-account').innerHTML = `
+                <p><span class="font-bold">ชื่อผู้ใช้:</span> ${username}</p>
+                <p><span class="font-bold">รหัสผ่าน:</span> ••••••••</p>
+            `;
+        }
+
+        // --- Submit Form ---
+        async function submitForm() {
+            const btn = document.querySelector('button[onclick="submitForm()"]');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+            btn.disabled = true;
+
+            const formData = new FormData(document.getElementById('regisForm'));
+
+            try {
+                const response = await fetch('api/register_action.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    alert('ลงทะเบียนสำเร็จ! กรุณาตรวจสอบอีเมล');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.message);
+                    btn.innerHTML = 'ยืนยันการสมัคร';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                btn.innerHTML = 'ยืนยันการสมัคร';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

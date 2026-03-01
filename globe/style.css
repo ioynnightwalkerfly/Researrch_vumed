@@ -1,0 +1,206 @@
+/* COLOURS */
+/* RESETS */
+html,
+body,
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  font-family: "Cairo", sans-serif;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -moz-font-feature-settings: "liga" on;
+  color: #FFFFFF;
+  overflow-x: hidden;
+  background: #1E8CE4;
+  background: linear-gradient(135deg, #1E8CE4 0%, #00F3CA 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#1E8CE4", endColorstr="${colourEnd}", GradientType=1);
+}
+
+/* GLOBE */
+.globe {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.globe .globe-list {
+  z-index: 10;
+  position: absolute;
+  left: 0;
+  top: 0;
+  list-style: none;
+  display: none;
+}
+
+.globe .globe-list {
+  opacity: 0;
+  transition: opacity 3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.globe .globe-list.active {
+  opacity: 1;
+}
+
+.globe .globe-list > li {
+  opacity: 0.4;
+  position: absolute;
+  margin-left: -8px;
+  margin-top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #00FFD3;
+  transition: opacity 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.globe .globe-list > li.active {
+  opacity: 1;
+  margin-left: -12px;
+  margin-top: -12px;
+  width: 24px;
+  height: 24px;
+}
+
+.globe .globe-list > li:before {
+  content: "";
+  opacity: 0.5;
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #00FFD3;
+  -webkit-animation: 2s pulse infinite linear;
+  animation: 2s pulse infinite linear;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: scale(2);
+  }
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+.globe .globe-list > li.active:before {
+  margin-left: -12px;
+  margin-top: -12px;
+  width: 24px;
+  height: 24px;
+}
+
+.globe .globe-list > li.active,
+.globe .globe-list > li.active:before {
+  background: #FFFFFF;
+}
+
+.globe .globe-list .text {
+  position: absolute;
+  opacity: 0.8;
+  right: 21px;
+  top: 50%;
+  display: block;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  text-align: right;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000, 1px 1px 0 #000000;
+  color: #FFFFFF;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+.globe .globe-list > li.active .text {
+  opacity: 1;
+  right: 29px;
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: 700;
+}
+
+.globe .globe-canvas {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.globe svg {
+  height: 100%;
+  width: 100%;
+  opacity: 0.3;
+  -webkit-animation: rotation 10s linear infinite;
+          animation: rotation 10s linear infinite;
+}
+
+.svg-wrapper {
+  opacity: 0;
+  display: inline-block;
+  position: absolute;
+  width: 80vh;
+  height: 80%;
+  left: 0;
+  right: 0;
+  top: 10%;
+  margin: auto;
+  transform: scale(0.5);
+  transition: opacity 1s ease-out 1.6s, transform 1s ease-out 1.6s;
+}
+.svg-wrapper.active {
+  opacity: 1;
+  transform: none;
+}
+
+@-webkit-keyframes rotation {
+  0% {
+    transform: scaleX(-1) rotate(360deg);
+  }
+  100% {
+    transform: scaleX(-1) rotate(0deg);
+  }
+}
+
+@keyframes rotation {
+  0% {
+    transform: scaleX(-1) rotate(360deg);
+  }
+  100% {
+    transform: scaleX(-1) rotate(0deg);
+  }
+}
