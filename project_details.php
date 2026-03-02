@@ -302,7 +302,17 @@ try {
             updateTimeline(p);
 
             // General Info
-            document.getElementById('p-source').innerText = (p.source_funds === 'external' ? 'ทุนภายนอก' : (p.source_funds === 'personal' ? 'ทุนส่วนตัว' : 'ทุนภายใน')) || '-';
+            const sourceMap = {
+                'personal': 'เงินทุนส่วนตัว',
+                'foundation': 'ทุนจากมูลนิธิ องค์กรอิสระ หรือสมาคม',
+                'government': 'ทุนจากหน่วยงานของรัฐบาลไทย',
+                'university': 'ทุนภายในมหาวิทยาลัยวงษ์ชวลิตกุล',
+                'private': 'ทุนสนับสนุนจากเอกชน',
+                'other': 'อื่นๆ',
+                'internal': 'ทุนภายใน',
+                'external': 'ทุนภายนอก'
+            };
+            document.getElementById('p-source').innerText = sourceMap[p.source_funds] || p.source_funds || '-';
             document.getElementById('p-funder').innerText = p.funder_name || '-';
             document.getElementById('p-volunteer').innerText = p.volunteers_under_18 == 1 ? 'มี' : 'ไม่มี';
 
