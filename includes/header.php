@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/output.css">
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
         tailwind.config = {
