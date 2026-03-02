@@ -1,10 +1,20 @@
 <?php
 session_start();
+require_once 'api/db.php';
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
 }
 $userName = $_SESSION['fullname'] ?? 'User';
+
+$meetingSystemEnabled = false;
+try {
+    $stmtSettings = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'meeting_system_enabled'");
+    $meetingSystemEnabled = $stmtSettings->fetchColumn() === '1';
+} catch (Exception $e) {
+    $meetingSystemEnabled = false;
+}
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -68,7 +78,6 @@ $userName = $_SESSION['fullname'] ?? 'User';
                         
                         <div class="flex flex-wrap gap-4 text-sm text-gray-600">
                             <div class="flex items-center"><i class="fa-solid fa-tag w-5 text-blue-500"></i> <span id="p-type"></span></div>
-                            <div class="flex items-center"><i class="fa-solid fa-coins w-5 text-yellow-500"></i> <span id="p-budget"></span></div>
                             <div class="flex items-center"><i class="fa-solid fa-calendar w-5 text-green-500"></i> ยื่นเมื่อ: <span id="p-date"></span></div>
                         </div>
                     </div>
@@ -120,9 +129,11 @@ $userName = $_SESSION['fullname'] ?? 'User';
                             </div>
                             <div id="step-4-sub" class="text-xs text-gray-400"></div>
                             <div class="mt-1">
+                                <?php if ($meetingSystemEnabled): ?>
                                 <a href="meeting_calendar.php" class="text-[10px] bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 px-2 py-1 rounded inline-flex items-center gap-1 shadow-sm transition">
                                     <i class="fa-solid fa-calendar-alt text-blue-500"></i> ดูตารางประชุม
                                 </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -266,7 +277,6 @@ $userName = $_SESSION['fullname'] ?? 'User';
             document.getElementById('p-title-th').innerText = p.title_th || '-';
             document.getElementById('p-title-en').innerText = p.title_en || '-';
             document.getElementById('p-type').innerText = p.research_type || '-';
-            document.getElementById('p-budget').innerText = p.budget ? Number(p.budget).toLocaleString() + ' บาท' : '-';
             document.getElementById('p-date').innerText = p.submission_date ? new Date(p.submission_date).toLocaleDateString('th-TH') : (p.created_at ? new Date(p.created_at).toLocaleDateString('th-TH') : '-');
 
             // Status Badge
