@@ -69,14 +69,14 @@ $totalAll = $stmtAll->fetchColumn();
             </a>
             <a href="javascript:void(0)" onclick="scrollToSection('returned-section')" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
                 <i class="fa-solid fa-rotate-left w-6"></i>
-                <span>ตีกลับแล้ว</span>
+                <span>เอกสารไม่ครบ (รอแก้ไข)</span>
                 <?php if ($totalReturned > 0): ?>
                 <span class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"><?php echo $totalReturned; ?></span>
                 <?php endif; ?>
             </a>
             <a href="javascript:void(0)" onclick="scrollToSection('passed-section')" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
                 <i class="fa-solid fa-circle-check w-6"></i>
-                <span>ผ่านแล้ว</span>
+                <span>เอกสารครบถ้วน</span>
             </a>
 
             <div class="mt-6 pt-4 border-t border-gray-700">
@@ -136,13 +136,13 @@ $totalAll = $stmtAll->fetchColumn();
                 <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center"><i class="fa-solid fa-rotate-left text-orange-600 text-xl"></i></div>
-                        <div><div class="text-2xl font-bold text-gray-800"><?php echo $totalReturned; ?></div><div class="text-xs text-gray-500">ตีกลับ (รอแก้ไข)</div></div>
+                        <div><div class="text-2xl font-bold text-gray-800"><?php echo $totalReturned; ?></div><div class="text-xs text-gray-500">เอกสารไม่ครบ (รอแก้ไข)</div></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"><i class="fa-solid fa-circle-check text-green-600 text-xl"></i></div>
-                        <div><div class="text-2xl font-bold text-gray-800"><?php echo $totalPassed; ?></div><div class="text-xs text-gray-500">ผ่านแล้ว</div></div>
+                        <div><div class="text-2xl font-bold text-gray-800"><?php echo $totalPassed; ?></div><div class="text-xs text-gray-500">เอกสารครบถ้วนแล้ว</div></div>
                     </div>
                 </div>
             </div>
@@ -196,7 +196,7 @@ $totalAll = $stmtAll->fetchColumn();
             <!-- Returned Projects -->
             <div id="returned-section" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                 <div class="bg-orange-50 px-6 py-4 border-b border-orange-100">
-                    <h3 class="font-bold text-orange-800"><i class="fa-solid fa-rotate-left mr-2"></i>ตีกลับแล้ว (รอนักวิจัยแก้ไข)</h3>
+                    <h3 class="font-bold text-orange-800"><i class="fa-solid fa-rotate-left mr-2"></i>เอกสารไม่ครบ (รอนักวิจัยแก้ไข)</h3>
                 </div>
                 <?php if (empty($returnedProjects)): ?>
                 <div class="p-8 text-center text-gray-400"><p>ไม่มีรายการที่ตีกลับ</p></div>
@@ -233,7 +233,7 @@ $totalAll = $stmtAll->fetchColumn();
             <!-- Passed Projects -->
             <div id="passed-section" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                 <div class="bg-green-50 px-6 py-4 border-b border-green-100">
-                    <h3 class="font-bold text-green-800"><i class="fa-solid fa-circle-check mr-2"></i>ผ่านการตรวจสอบแล้ว</h3>
+                    <h3 class="font-bold text-green-800"><i class="fa-solid fa-circle-check mr-2"></i>เอกสารครบถ้วนแล้ว</h3>
                 </div>
                 <?php if (empty($passedProjects)): ?>
                 <div class="p-8 text-center text-gray-400"><p>ยังไม่มีรายการที่ผ่าน</p></div>

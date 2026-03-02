@@ -118,9 +118,16 @@ try {
                                             </a>
                                         </td>
                                         <td class="px-6 py-4 text-center bg-gray-50/50">
-                                            <label class="flex items-center justify-center gap-2 cursor-pointer">
-                                                <input type="checkbox" name="doc_check[]" value="<?php echo $doc['id']; ?>" class="w-5 h-5 text-green-600 rounded focus:ring-green-500 border-gray-300 transition doc-checkbox">
-                                            </label>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                                    <input type="radio" name="doc_status_<?php echo $doc['id']; ?>" value="correct" class="w-4 h-4 text-green-600 focus:ring-green-500 border-gray-300">
+                                                    <span class="text-green-700">✅ ครบถูกต้อง</span>
+                                                </label>
+                                                <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                                    <input type="radio" name="doc_status_<?php echo $doc['id']; ?>" value="revision" class="w-4 h-4 text-orange-500 focus:ring-orange-500 border-gray-300">
+                                                    <span class="text-orange-600">⚠️ มีการแก้ไข</span>
+                                                </label>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -142,7 +149,7 @@ try {
                             <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-green-50 transition" onclick="toggleReason(false)">
                                 <input type="radio" name="action" value="approve" class="w-5 h-5 text-green-600" checked>
                                 <div class="ml-3">
-                                    <span class="block text-sm font-bold text-gray-800">✅ ผ่านการตรวจสอบ</span>
+                                    <span class="block text-sm font-bold text-gray-800">✅ เอกสารครบถ้วน</span>
                                     <span class="block text-xs text-gray-500">ส่งต่อให้เลขาฯ</span>
                                 </div>
                             </label>
@@ -150,22 +157,43 @@ try {
                             <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-orange-50 transition" onclick="toggleReason(true)">
                                 <input type="radio" name="action" value="return" class="w-5 h-5 text-orange-500">
                                 <div class="ml-3">
-                                    <span class="block text-sm font-bold text-gray-800">⚠️ ตีกลับให้แก้ไข</span>
-                                    <span class="block text-xs text-gray-500">แจ้งสิ่งที่ต้องแก้ไข</span>
+                                    <span class="block text-sm font-bold text-gray-800">⚠️ เอกสารไม่ครบให้แก้ไข</span>
+                                    <span class="block text-xs text-gray-500">แจ้งสิ่งที่ต้องแก้ไขกลับไปยังผู้วิจัย</span>
                                 </div>
                             </label>
                         </div>
 
                         <div id="return-reason-area" class="hidden space-y-3">
-                            <div class="bg-orange-50 p-4 rounded-lg border border-orange-100 text-sm text-orange-800">
-                                <p class="font-bold mb-2">สิ่งที่ต้องแก้ไข:</p>
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2"><input type="checkbox" class="fix-check" value="เอกสารวิจัยฉบับสมบูรณ์ไม่ครบถ้วน"> เอกสารไม่ครบ</label>
-                                    <label class="flex items-center gap-2"><input type="checkbox" class="fix-check" value="ขาดหลักฐานการชำระเงิน"> ขาดหลักฐานการชำระเงิน</label>
-                                    <label class="flex items-center gap-2"><input type="checkbox" class="fix-check" value="ข้อมูลไม่ตรงกับเอกสาร"> ข้อมูลไม่ตรงกับเอกสาร</label>
+                            <div class="bg-orange-50 p-5 rounded-lg border border-orange-200 text-sm text-gray-800">
+                                <p class="font-bold mb-3 text-orange-800"><i class="fa-solid fa-list-check mr-2"></i>สิ่งที่ต้องแก้ไข / ส่งเพิ่มเติม:</p>
+                                <div class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                                    <label class="flex items-start gap-2 p-2 hover:bg-orange-100 rounded cursor-pointer transition">
+                                        <input type="checkbox" class="fix-check mt-1" value="หลักฐานการชำระเงิน"> 
+                                        <span>1. หลักฐานการชำระเงิน</span>
+                                    </label>
+                                    <label class="flex items-start gap-2 p-2 hover:bg-orange-100 rounded cursor-pointer transition">
+                                        <input type="checkbox" class="fix-check mt-1" value="แบบเสนอเพื่อขอยกเว้นการพิจารณาฯ"> 
+                                        <span>2. แบบเสนอเพื่อขอยกเว้นการพิจารณาฯ (ถ้ามี)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2 p-2 hover:bg-orange-100 rounded cursor-pointer transition">
+                                        <input type="checkbox" class="fix-check mt-1" value="โครงการวิจัยฉบับสมบูรณ์ (Full Proposal)"> 
+                                        <span>3. โครงการวิจัยฉบับสมบูรณ์ (Full Proposal)</span>
+                                    </label>
+                                    <label class="flex items-start gap-2 p-2 hover:bg-orange-100 rounded cursor-pointer transition">
+                                        <input type="checkbox" class="fix-check mt-1" value="เครื่องมือที่ใช้ในการวิจัย"> 
+                                        <span>4. เครื่องมือที่ใช้ในการวิจัย</span>
+                                    </label>
+                                    <label class="flex items-start gap-2 p-2 hover:bg-orange-100 rounded cursor-pointer transition">
+                                        <input type="checkbox" class="fix-check mt-1" value="หนังสือขออนุญาตใช้ตัวอย่างชีวภาพ"> 
+                                        <span>5. หนังสือขออนุญาตใช้ตัวอย่างชีวภาพ</span>
+                                    </label>
+                                    <label class="flex items-start gap-2 p-2 hover:bg-orange-100 rounded cursor-pointer transition">
+                                        <input type="checkbox" class="fix-check mt-1" value="เอกสารประกอบอื่นๆ ที่เกี่ยวข้อง"> 
+                                        <span>6. เอกสารประกอบอื่นๆ ที่เกี่ยวข้อง</span>
+                                    </label>
                                 </div>
                             </div>
-                            <textarea id="reason-text" rows="4" class="w-full p-3 border rounded-lg text-sm" placeholder="ระบุรายละเอียด..."></textarea>
+                            <textarea id="reason-text" rows="4" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500" placeholder="ระบุเหตุผลอธิบายเพิ่มเติมที่ต้องแก้ไข... (Optional)"></textarea>
                         </div>
 
                         <button onclick="submitReview()" class="w-full py-3 px-4 bg-gray-900 text-white rounded-lg font-bold shadow-lg hover:bg-black transition">
@@ -187,8 +215,24 @@ try {
         async function submitReview() {
             const action = document.querySelector('input[name="action"]:checked').value;
             const projectId = <?php echo $projectId; ?>;
-            const checks = Array.from(document.querySelectorAll('.fix-check:checked')).map(cb => cb.value);
+            
+            // Collect manually ticked missing documents
+            const checks = Array.from(document.querySelectorAll('.fix-check:checked')).map(cb => 'ขาดเอกสาร: ' + cb.value);
+            
+            // Collect documents marked as 'revision' in the table
+            const revisionDocs = [];
+            document.querySelectorAll('input[type="radio"][value="revision"]:checked').forEach(radio => {
+                const docName = radio.closest('tr').querySelector('.font-medium').innerText.trim();
+                revisionDocs.push('ต้องแก้ไขเอกสาร: ' + docName);
+            });
+            
+            const allIssues = [...revisionDocs, ...checks];
             const reason = document.getElementById('reason-text').value;
+
+            if (action === 'return' && allIssues.length === 0 && reason.trim() === '') {
+                alert('กรุณาระบุสิ่งที่ต้องแก้ไข หรือเลือกเอกสารที่ไม่ครบ/ต้องแก้ไข');
+                return;
+            }
 
             const formData = new FormData();
             formData.append('action', 'officer_review');
@@ -196,7 +240,7 @@ try {
             formData.append('project_id', projectId);
             if(action === 'return') {
                 formData.append('reason', reason);
-                formData.append('issues', JSON.stringify(checks));
+                formData.append('issues', JSON.stringify(allIssues));
             }
 
             try {

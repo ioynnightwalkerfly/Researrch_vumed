@@ -286,7 +286,7 @@ try {
                         <i class="fa-solid fa-ban text-6xl text-red-600"></i>
                     </div>
                     <div>
-                        <p class="text-red-600 font-bold text-sm uppercase tracking-wide">ยุติโครงการก่อนกำหนด</p>
+                        <p class="text-red-600 font-bold text-sm uppercase tracking-wide">ยุติโครงการวิจัยก่อนกำหนด</p>
                         <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countTermination ?? 0; ?></h3>
                         <p class="text-xs text-gray-400 mt-1">โครงการ</p>
                     </div>
