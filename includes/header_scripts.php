@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Addiction Science Center</title>
 <!-- โหลด Tailwind CSS ผ่าน CDN (ถ้าในโปรเจคมีอยู่แล้ว สามารถเอาบรรทัดนี้ออกได้) -->
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/output.css">
 <!-- โหลด Lucide Icons สำหรับ HTML/JS ธรรมดา -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <!-- โหลด Three.js สำหรับ Infinite Gallery ในแท็บ PR -->
