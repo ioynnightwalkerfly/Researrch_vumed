@@ -27,7 +27,7 @@ $userName = $_SESSION['fullname'] ?? 'User';
         .step-circle.inactive { background-color: white; color: #9CA3AF; border: 2px solid #E5E7EB; }
         .input-group label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.25rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; outline: none; transition: border-color 0.15s; }
-        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: #3B82F6; ring: 2px solid #93C5FD; }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: #3B82F6; box-shadow: 0 0 0 2px #93C5FD; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -182,7 +182,7 @@ $userName = $_SESSION['fullname'] ?? 'User';
                                     <th class="p-3 text-center w-12">#</th>
                                     <th class="p-3">ชื่อเอกสาร</th>
                                     <th class="p-3 w-20">Ver.</th>
-                                    <th class="p-3 w-28">วันที่</th>
+                                    <th class="p-3 w-28">วันที่ยื่นเอกสาร</th>
                                     <th class="p-3 text-center w-20">จำเป็น</th>
                                     <th class="p-3 w-40 text-center">ไฟล์</th>
                                     <th class="p-3 w-24 text-center">ดำเนินการ</th>
@@ -895,6 +895,7 @@ $userName = $_SESSION['fullname'] ?? 'User';
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg border-b pb-2 mb-3"><i class="fa-solid fa-users text-blue-600 mr-2"></i> ทีมวิจัย</h3>
                         <div class="grid grid-cols-1 gap-4 text-sm">
+                            <div><span class="text-gray-500 block">หัวหน้าโครงการ (ผู้ยื่นเสนอ):</span> <div class="font-medium text-emerald-700 mt-1 pl-4 border-l-2 border-emerald-500"><?php echo htmlspecialchars($userName); ?></div></div>
                             <div><span class="text-gray-500 block">ผู้ร่วมวิจัย:</span> <div class="font-medium text-gray-900 mt-1 pl-4 border-l-2 border-gray-100">${getTeamNames('co-researcher-list')}</div></div>
                             <div><span class="text-gray-500 block">ที่ปรึกษา:</span> <div class="font-medium text-gray-900 mt-1 pl-4 border-l-2 border-gray-100">${getTeamNames('advisor-list')}</div></div>
                         </div>

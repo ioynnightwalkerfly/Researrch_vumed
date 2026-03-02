@@ -65,8 +65,37 @@ try {
     $countAdverseEvent = 0;
     $countClosure = 0;
 
-    // 3. Fetch Recent Projects
-    $sqlProjects = "SELECT * FROM projects $condition ORDER BY created_at DESC"; // Show all for the table, or limit?
+    // 3. Fetch Recent Projects (With Filter Logic)
+    $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+    $filterCondition = "";
+    
+    switch ($filter) {
+        case 'approved':
+            $filterCondition = " AND status = 'approved'";
+            break;
+        case 'rejected':
+            $filterCondition = " AND status = 'rejected'";
+            break;
+        case 'extension':
+            $filterCondition = " AND status = 'extension'"; // Adjust if DB uses a different status
+            break;
+        case 'progress':
+            $filterCondition = " AND status = 'progress'";
+            break;
+        case 'termination':
+            $filterCondition = " AND status = 'termination'";
+            break;
+        case 'adverse':
+            $filterCondition = " AND status = 'adverse'";
+            break;
+        case 'closure':
+            $filterCondition = " AND status = 'closure'";
+            break;
+        default:
+            $filterCondition = ""; // 'all'
+    }
+
+    $sqlProjects = "SELECT * FROM projects $condition $filterCondition ORDER BY created_at DESC"; // Show all for the table, or limit?
     $stmt = $conn->prepare($sqlProjects);
     $stmt->execute($params);
     $projects = $stmt->fetchAll();
@@ -233,88 +262,102 @@ try {
             <!-- Status Cards (New Logic) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 <!-- Card 1: งานวิจัย(อนุมัติแล้ว) -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-emerald-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
-                    <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-check-circle text-6xl text-emerald-500"></i>
+                <a href="?filter=approved" class="block">
+                    <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-emerald-500 relative overflow-hidden group hover:-translate-y-1 transition text-left <?php echo $filter == 'approved' ? 'ring-2 ring-emerald-500 bg-emerald-50/30' : ''; ?>">
+                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-check-circle text-6xl text-emerald-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-emerald-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (อนุมัติแล้ว)</p>
+                            <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countApproved ?? 0; ?></h3>
+                            <p class="text-xs text-gray-400 mt-1">โครงการ</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-emerald-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (อนุมัติแล้ว)</p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countApproved ?? 0; ?></h3>
-                        <p class="text-xs text-gray-400 mt-1">โครงการ</p>
-                    </div>
-                </div>
+                </a>
 
                 <!-- Card 2: งานวิจัยรอแก้ไข -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-rose-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
-                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-file-pen text-6xl text-rose-500"></i>
+                <a href="?filter=rejected" class="block">
+                    <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-rose-500 relative overflow-hidden group hover:-translate-y-1 transition text-left <?php echo $filter == 'rejected' ? 'ring-2 ring-rose-500 bg-rose-50/30' : ''; ?>">
+                         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-file-pen text-6xl text-rose-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-rose-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (รอแก้ไข)</p>
+                            <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countRevision ?? 0; ?></h3>
+                            <p class="text-xs text-gray-400 mt-1">รอการดำเนินการ</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-rose-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (รอแก้ไข)</p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countRevision ?? 0; ?></h3>
-                        <p class="text-xs text-gray-400 mt-1">รอการดำเนินการ</p>
-                    </div>
-                </div>
+                </a>
 
                  <!-- Card 3: งานวิจัย(ขอพิจารณาต่ออายุ) -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-amber-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
-                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-calendar-plus text-6xl text-amber-500"></i>
+                <a href="?filter=extension" class="block">
+                    <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-amber-500 relative overflow-hidden group hover:-translate-y-1 transition text-left <?php echo $filter == 'extension' ? 'ring-2 ring-amber-500 bg-amber-50/30' : ''; ?>">
+                         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-calendar-plus text-6xl text-amber-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-amber-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (ขอต่ออายุ)</p>
+                            <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countExtension ?? 0; ?></h3>
+                            <p class="text-xs text-gray-400 mt-1">โครงการ</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-amber-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (ขอต่ออายุ)</p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countExtension ?? 0; ?></h3>
-                        <p class="text-xs text-gray-400 mt-1">โครงการ</p>
-                    </div>
-                </div>
+                </a>
 
                 <!-- Card 4: รายงานความก้าวหน้า -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-blue-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
-                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-chart-line text-6xl text-blue-500"></i>
+                <a href="?filter=progress" class="block">
+                    <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-blue-500 relative overflow-hidden group hover:-translate-y-1 transition text-left <?php echo $filter == 'progress' ? 'ring-2 ring-blue-500 bg-blue-50/30' : ''; ?>">
+                         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-chart-line text-6xl text-blue-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-blue-600 font-bold text-sm uppercase tracking-wide gap-1 flex flex-col"><span>รายงานความก้าวหน้า</span><span class="text-[10px]">(6 เดือน/12 เดือน)</span></p>
+                            <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countProgress ?? 0; ?></h3>
+                            <p class="text-xs text-gray-400 mt-1">โครงการ</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-blue-600 font-bold text-sm uppercase tracking-wide gap-1 flex flex-col"><span>รายงานความก้าวหน้า</span><span class="text-[10px]">(6 เดือน/12 เดือน)</span></p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countProgress ?? 0; ?></h3>
-                        <p class="text-xs text-gray-400 mt-1">โครงการ</p>
-                    </div>
-                </div>
+                </a>
 
                 <!-- Card 5: ยุติโครงการก่อนกำหนด -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-red-600 relative overflow-hidden group hover:-translate-y-1 transition text-left">
-                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-ban text-6xl text-red-600"></i>
+                <a href="?filter=termination" class="block">
+                    <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-red-600 relative overflow-hidden group hover:-translate-y-1 transition text-left <?php echo $filter == 'termination' ? 'ring-2 ring-red-600 bg-red-50/30' : ''; ?>">
+                         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-ban text-6xl text-red-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-red-600 font-bold text-sm uppercase tracking-wide">ยุติโครงการวิจัยก่อนกำหนด</p>
+                            <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countTermination ?? 0; ?></h3>
+                            <p class="text-xs text-gray-400 mt-1">โครงการ</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-red-600 font-bold text-sm uppercase tracking-wide">ยุติโครงการวิจัยก่อนกำหนด</p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countTermination ?? 0; ?></h3>
-                        <p class="text-xs text-gray-400 mt-1">โครงการ</p>
-                    </div>
-                </div>
+                </a>
 
                 <!-- Card 6: รายงานเหตุการณ์ไม่พึงประสงค์ -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-fuchsia-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
-                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-triangle-exclamation text-6xl text-fuchsia-500"></i>
+                <a href="?filter=adverse" class="block">
+                    <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-fuchsia-500 relative overflow-hidden group hover:-translate-y-1 transition text-left <?php echo $filter == 'adverse' ? 'ring-2 ring-fuchsia-500 bg-fuchsia-50/30' : ''; ?>">
+                         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-triangle-exclamation text-6xl text-fuchsia-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-fuchsia-600 font-bold text-sm uppercase tracking-wide">รายงานเหตุการณ์ไม่พึงประสงค์</p>
+                            <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countAdverseEvent ?? 0; ?></h3>
+                            <p class="text-xs text-gray-400 mt-1">รายงาน</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-fuchsia-600 font-bold text-sm uppercase tracking-wide">รายงานเหตุการณ์ไม่พึงประสงค์</p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countAdverseEvent ?? 0; ?></h3>
-                        <p class="text-xs text-gray-400 mt-1">รายงาน</p>
-                    </div>
-                </div>
+                </a>
 
                 <!-- Card 7: ส่งรายงานปิดโครงการ -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-indigo-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
-                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-flag-checkered text-6xl text-indigo-500"></i>
+                <a href="?filter=closure" class="block">
+                    <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-indigo-500 relative overflow-hidden group hover:-translate-y-1 transition text-left <?php echo $filter == 'closure' ? 'ring-2 ring-indigo-500 bg-indigo-50/30' : ''; ?>">
+                         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-flag-checkered text-6xl text-indigo-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-indigo-600 font-bold text-sm uppercase tracking-wide">รายงานสรุปผลการวิจัย<span class="block text-[10px]">(ปิดโครงการ)</span></p>
+                            <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countClosure ?? 0; ?></h3>
+                            <p class="text-xs text-gray-400 mt-1">โครงการ</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-indigo-600 font-bold text-sm uppercase tracking-wide">รายงานสรุปผลการวิจัย<span class="block text-[10px]">(ปิดโครงการ)</span></p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countClosure ?? 0; ?></h3>
-                        <p class="text-xs text-gray-400 mt-1">โครงการ</p>
-                    </div>
-                </div>
+                </a>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -350,10 +393,10 @@ try {
                         <thead>
                             <tr class="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
                                 <th class="px-6 py-3 font-semibold">ชื่อโครงการ</th>
-                                <th class="px-6 py-3 font-semibold">วันที่ยื่น</th>
+                                <th class="px-6 py-3 font-semibold">วันที่ยื่นโครงการ</th>
 
                                 <th class="px-6 py-3 font-semibold text-center">สถานะ</th>
-                                <th class="px-6 py-3 font-semibold text-center">จัดการ</th>
+                                <th class="px-6 py-3 font-semibold text-center">การดำเนินการ</th>
                             </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-gray-100">
