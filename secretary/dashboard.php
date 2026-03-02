@@ -61,6 +61,11 @@ $totalApproved = $stmtApproved->fetchColumn();
                 <span class="ml-auto bg-yellow-500 text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full"><?php echo $totalChairman; ?></span>
                 <?php endif; ?>
             </a>
+            
+            <a href="../meeting_calendar.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
+                <i class="fa-solid fa-calendar-check w-6"></i>
+                <span>จัดการนัดหมายการประชุม</span>
+            </a>
 
             <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Settings</div>
             <a href="../select_role.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">

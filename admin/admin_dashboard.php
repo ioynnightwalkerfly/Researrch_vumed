@@ -90,6 +90,11 @@ try {
                 <span>ข่าวบริการวิชาการ</span>
             </a>
             
+            <a href="../meeting_calendar.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
+                <i class="fa-solid fa-calendar-check w-6"></i>
+                <span>จัดการนัดหมายการประชุม</span>
+            </a>
+            
             <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Access Modes</div>
             <a href="../officer/dashboard.php" target="_blank" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
                 <i class="fa-solid fa-user-shield w-6"></i>

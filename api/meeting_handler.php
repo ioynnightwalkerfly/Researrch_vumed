@@ -8,9 +8,17 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$userRole = $_SESSION['role'] ?? '';
+// Handle case where role might be a single string or an array
+$isOfficerOrAdmin = false;
+if (is_array($userRole)) {
+    $isOfficerOrAdmin = in_array('admin', $userRole) || in_array('staff', $userRole) || in_array('secretary', $userRole);
+} else {
+    $isOfficerOrAdmin = ($userRole === 'admin' || $userRole === 'staff' || $userRole === 'secretary');
+}
+
 $action = $_POST['action'] ?? ($_GET['action'] ?? '');
 $userId = $_SESSION['user_id'];
-$isOfficerOrAdmin = isset($_SESSION['role']) && (in_array('admin', $_SESSION['role']) || in_array('staff', $_SESSION['role']) || in_array('secretary', $_SESSION['role']));
 
 // Normally, you would check real roles from DB. For now, we trust the session or verify if needed.
 // This is a simplified check based on 'is_admin' or similar if they exist. We assume admins/staff can manage meetings.

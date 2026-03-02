@@ -136,7 +136,8 @@ try {
             throw new Exception("ขนาดไฟล์ต้องไม่เกิน 10MB");
         }
 
-        // Security: Check true MIME Type
+        /* 
+        // ปิดการตรวจสอบ MIME type ชั่วคราวตามที่ขอ
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
@@ -152,6 +153,7 @@ try {
         if (!in_array($mime_type, $allowed_mimes)) {
             throw new Exception("ประเภทไฟล์ไม่รองรับ (รับเฉพาะ PDF, Word, JPG, PNG)");
         }
+        */
 
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $safeName = "doc_{$docType}_" . time() . ".$ext";

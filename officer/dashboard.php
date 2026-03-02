@@ -84,6 +84,10 @@ $totalAll = $stmtAll->fetchColumn();
                     <i class="fa-solid fa-clock w-6"></i>
                     <span>จัดการ Deadline</span>
                 </a>
+                <a href="../meeting_calendar.php" class="w-full flex items-center px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-gray-800 rounded-lg transition mt-2">
+                    <i class="fa-solid fa-calendar-check w-6"></i>
+                    <span>จัดการนัดหมายการประชุม</span>
+                </a>
             </div>
 
             <div class="mt-6 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Settings</div>
