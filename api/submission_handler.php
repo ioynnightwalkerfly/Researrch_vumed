@@ -112,6 +112,29 @@ try {
 
         // Process File
         $file = $_FILES['file'];
+
+        // Security: Limit file size to 10MB (10 * 1024 * 1024)
+        if ($file['size'] > 10485760) {
+            throw new Exception("ขนาดไฟล์ต้องไม่เกิน 10MB");
+        }
+
+        // Security: Check true MIME Type
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        $allowed_mimes = [
+            'application/pdf', 
+            'image/jpeg', 
+            'image/png', 
+            'application/msword', 
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        
+        if (!in_array($mime_type, $allowed_mimes)) {
+            throw new Exception("ประเภทไฟล์ไม่รองรับ (รับเฉพาะ PDF, Word, JPG, PNG)");
+        }
+
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $safeName = "doc_{$docType}_" . time() . ".$ext";
         $targetPath = $targetDir . $safeName;

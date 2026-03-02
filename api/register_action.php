@@ -32,15 +32,33 @@ try {
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // 2. จัดการไฟล์แนบ
+    // 2. จัดการไฟล์แนบ (อัปโหลด CV)
     $cv_path = null;
     if (isset($_FILES['cv_file']) && $_FILES['cv_file']['error'] === UPLOAD_ERR_OK) {
+        // จำกัดขนาด 5MB (5 * 1024 * 1024 bytes)
+        if ($_FILES['cv_file']['size'] > 5242880) {
+            throw new Exception('ขนาดไฟล์ CV ต้องไม่เกิน 5MB');
+        }
+
+        // เช็ค MIME Type แท้จริง
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $_FILES['cv_file']['tmp_name']);
+        finfo_close($finfo);
+
+        $allowed_mimes = ['application/pdf', 'image/jpeg', 'image/png'];
+        if (!in_array($mime_type, $allowed_mimes)) {
+            throw new Exception('ประเภทไฟล์ไม่รองรับ กรุณาอัปโหลด PDF, JPG หรือ PNG เท่านั้น');
+        }
+
         $uploadDir = '../uploads/cv/';
         if (!is_dir($uploadDir)) @mkdir($uploadDir, 0777, true);
         $fileExt = strtolower(pathinfo($_FILES['cv_file']['name'], PATHINFO_EXTENSION));
         $newFileName = uniqid('cv_') . '.' . $fileExt;
-        if(move_uploaded_file($_FILES['cv_file']['tmp_name'], $uploadDir . $newFileName)) {
+        
+        if (move_uploaded_file($_FILES['cv_file']['tmp_name'], $uploadDir . $newFileName)) {
             $cv_path = $newFileName;
+        } else {
+             throw new Exception('เกิดข้อผิดพลาดในการบันทึกไฟล์ Server');
         }
     }
 

@@ -1,0 +1,5 @@
+# Disable directory browsing
+Options -Indexes
+
+# Do NOT show PHP errors on the screen directly
+php_flag display_errors off
