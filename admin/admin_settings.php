@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 $userName = $_SESSION['fullname'];
 
+$meetingSystemEnabled = false;
 try {
     // Fetch Settings
     $stmt = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'meeting_system_enabled'");
@@ -69,10 +70,12 @@ try {
                 <span>ข่าวบริการวิชาการ</span>
             </a>
             
+            <?php if ($meetingSystemEnabled): ?>
             <a href="../meeting_calendar.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
                 <i class="fa-solid fa-calendar-check w-6"></i>
                 <span>จัดการนัดหมายการประชุม</span>
             </a>
+            <?php endif; ?>
             
             <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Access Modes</div>
             <a href="../officer/dashboard.php" target="_blank" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">

@@ -19,6 +19,13 @@ $stmtChairman = $conn->prepare("SELECT p.*, u.firstname_th, u.lastname_th FROM p
 $stmtChairman->execute();
 $chairmanProjects = $stmtChairman->fetchAll(PDO::FETCH_ASSOC);
 
+try {
+    $stmtSettings = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'meeting_system_enabled'");
+    $meetingSystemEnabled = $stmtSettings->fetchColumn() === '1';
+} catch (Exception $e) {
+    $meetingSystemEnabled = false;
+}
+
 // Stats
 $totalPending = count($pendingProjects);
 $totalChairman = count($chairmanProjects);
@@ -62,10 +69,12 @@ $totalApproved = $stmtApproved->fetchColumn();
                 <?php endif; ?>
             </a>
             
+            <?php if ($meetingSystemEnabled): ?>
             <a href="../meeting_calendar.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
                 <i class="fa-solid fa-calendar-check w-6"></i>
                 <span>จัดการนัดหมายการประชุม</span>
             </a>
+            <?php endif; ?>
 
             <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Settings</div>
             <a href="../select_role.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">

@@ -30,6 +30,13 @@ $stmtPassed = $conn->prepare("SELECT p.*, u.firstname_th, u.lastname_th FROM pro
 $stmtPassed->execute();
 $passedProjects = $stmtPassed->fetchAll(PDO::FETCH_ASSOC);
 
+try {
+    $stmtSettings = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'meeting_system_enabled'");
+    $meetingSystemEnabled = $stmtSettings->fetchColumn() === '1';
+} catch (Exception $e) {
+    $meetingSystemEnabled = false;
+}
+
 // Stats
 $totalPending = count($pendingProjects);
 $totalReturned = count($returnedProjects);
@@ -84,10 +91,12 @@ $totalAll = $stmtAll->fetchColumn();
                     <i class="fa-solid fa-clock w-6"></i>
                     <span>จัดการ Deadline</span>
                 </a>
+                <?php if ($meetingSystemEnabled): ?>
                 <a href="../meeting_calendar.php" class="w-full flex items-center px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-gray-800 rounded-lg transition mt-2">
                     <i class="fa-solid fa-calendar-check w-6"></i>
                     <span>จัดการนัดหมายการประชุม</span>
                 </a>
+                <?php endif; ?>
             </div>
 
             <div class="mt-6 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Settings</div>
