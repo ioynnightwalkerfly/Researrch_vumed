@@ -45,8 +45,7 @@ try {
                 ]
             ];
         }
-        
-        echo json_encode(['success' => true, 'events' => $events]);
+        echo json_encode($events);
     } 
     elseif ($action === 'create_meeting') {
         if (!$isOfficerOrAdmin) {

@@ -36,6 +36,10 @@ try {
     $stmt = $conn->query("SELECT p.id, p.title_th, p.status, p.submission_date, u.firstname_th, u.lastname_th FROM projects p JOIN users u ON p.user_id = u.id ORDER BY p.submission_date DESC LIMIT 5");
     $recentProjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Fetch Settings
+    $stmt = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'meeting_system_enabled'");
+    $meetingSystemEnabled = $stmt->fetchColumn() === '1';
+
 } catch (Exception $e) {
     $error = $e->getMessage();
 }
@@ -182,6 +186,8 @@ try {
                 </div>
             </div>
 
+
+
             <!-- Recent Activity Table -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -237,5 +243,34 @@ try {
         </div>
     </main>
 
+    <script>
+    function updateSetting(key, value) {
+        const formData = new FormData();
+        formData.append('action', 'update_setting');
+        formData.append('key', key);
+        formData.append('value', value);
+
+        fetch('../api/settings_handler.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Optional: Show a small toast notification instead of alert
+                console.log('Setting updated successfully');
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + data.message);
+                // Revert toggle if failed
+                document.getElementById('toggleMeetingSystem').checked = (value === '0');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            document.getElementById('toggleMeetingSystem').checked = (value === '0');
+        });
+    }
+    </script>
 </body>
 </html>

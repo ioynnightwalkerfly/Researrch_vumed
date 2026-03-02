@@ -61,8 +61,9 @@ try {
     // Mock values for the rest of the new statuses
     $countExtension = 0;
     $countProgress = 0;
-    $countClosure = 0;
+    $countTermination = 0;
     $countAdverseEvent = 0;
+    $countClosure = 0;
 
     // 3. Fetch Recent Projects
     $sqlProjects = "SELECT * FROM projects $condition ORDER BY created_at DESC"; // Show all for the table, or limit?
@@ -230,14 +231,14 @@ try {
             </div>
 
             <!-- Status Cards (New Logic) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 <!-- Card 1: งานวิจัย(อนุมัติแล้ว) -->
                 <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-emerald-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
                         <i class="fa-solid fa-check-circle text-6xl text-emerald-500"></i>
                     </div>
                     <div>
-                        <p class="text-emerald-600 font-bold text-sm uppercase tracking-wide">งานวิจัย(อนุมัติแล้ว)</p>
+                        <p class="text-emerald-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (อนุมัติแล้ว)</p>
                         <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countApproved ?? 0; ?></h3>
                         <p class="text-xs text-gray-400 mt-1">โครงการ</p>
                     </div>
@@ -249,7 +250,7 @@ try {
                         <i class="fa-solid fa-file-pen text-6xl text-rose-500"></i>
                     </div>
                     <div>
-                        <p class="text-rose-600 font-bold text-sm uppercase tracking-wide">งานวิจัยรอแก้ไข</p>
+                        <p class="text-rose-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (รอแก้ไข)</p>
                         <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countRevision ?? 0; ?></h3>
                         <p class="text-xs text-gray-400 mt-1">รอการดำเนินการ</p>
                     </div>
@@ -261,7 +262,7 @@ try {
                         <i class="fa-solid fa-calendar-plus text-6xl text-amber-500"></i>
                     </div>
                     <div>
-                        <p class="text-amber-600 font-bold text-sm uppercase tracking-wide">งานวิจัย(ขอต่ออายุ)</p>
+                        <p class="text-amber-600 font-bold text-sm uppercase tracking-wide">โครงการวิจัย (ขอต่ออายุ)</p>
                         <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countExtension ?? 0; ?></h3>
                         <p class="text-xs text-gray-400 mt-1">โครงการ</p>
                     </div>
@@ -273,20 +274,20 @@ try {
                         <i class="fa-solid fa-chart-line text-6xl text-blue-500"></i>
                     </div>
                     <div>
-                        <p class="text-blue-600 font-bold text-sm uppercase tracking-wide">รายงานความก้าวหน้า</p>
+                        <p class="text-blue-600 font-bold text-sm uppercase tracking-wide gap-1 flex flex-col"><span>รายงานความก้าวหน้า</span><span class="text-[10px]">(6 เดือน/12 เดือน)</span></p>
                         <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countProgress ?? 0; ?></h3>
                         <p class="text-xs text-gray-400 mt-1">โครงการ</p>
                     </div>
                 </div>
 
-                <!-- Card 5: ส่งรายงานปิดโครงการ -->
-                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-indigo-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
+                <!-- Card 5: ยุติโครงการก่อนกำหนด -->
+                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-red-600 relative overflow-hidden group hover:-translate-y-1 transition text-left">
                      <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fa-solid fa-flag-checkered text-6xl text-indigo-500"></i>
+                        <i class="fa-solid fa-ban text-6xl text-red-600"></i>
                     </div>
                     <div>
-                        <p class="text-indigo-600 font-bold text-sm uppercase tracking-wide">รายงานปิดโครงการ</p>
-                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countClosure ?? 0; ?></h3>
+                        <p class="text-red-600 font-bold text-sm uppercase tracking-wide">ยุติโครงการก่อนกำหนด</p>
+                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countTermination ?? 0; ?></h3>
                         <p class="text-xs text-gray-400 mt-1">โครงการ</p>
                     </div>
                 </div>
@@ -297,9 +298,21 @@ try {
                         <i class="fa-solid fa-triangle-exclamation text-6xl text-fuchsia-500"></i>
                     </div>
                     <div>
-                        <p class="text-fuchsia-600 font-bold text-sm uppercase tracking-wide">เหตุการณ์ไม่พึงประสงค์</p>
+                        <p class="text-fuchsia-600 font-bold text-sm uppercase tracking-wide">รายงานเหตุการณ์ไม่พึงประสงค์</p>
                         <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countAdverseEvent ?? 0; ?></h3>
                         <p class="text-xs text-gray-400 mt-1">รายงาน</p>
+                    </div>
+                </div>
+
+                <!-- Card 7: ส่งรายงานปิดโครงการ -->
+                <div class="bg-white rounded-xl p-6 card-shadow border-l-4 border-indigo-500 relative overflow-hidden group hover:-translate-y-1 transition text-left">
+                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                        <i class="fa-solid fa-flag-checkered text-6xl text-indigo-500"></i>
+                    </div>
+                    <div>
+                        <p class="text-indigo-600 font-bold text-sm uppercase tracking-wide">รายงานสรุปผลการวิจัย<span class="block text-[10px]">(ปิดโครงการ)</span></p>
+                        <h3 class="text-4xl font-bold text-gray-800 mt-2"><?php echo $countClosure ?? 0; ?></h3>
+                        <p class="text-xs text-gray-400 mt-1">โครงการ</p>
                     </div>
                 </div>
             </div>

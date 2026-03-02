@@ -97,6 +97,14 @@ try {
             <a href="../secretary/dashboard.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
                 <i class="fa-solid fa-file-contract w-6"></i><span>โหมดเลขานุการ</span>
             </a>
+            <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Settings</div>
+            <a href="admin_settings.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
+                <i class="fa-solid fa-cogs w-6"></i>
+                <span>ตั้งค่าระบบ</span>
+            </a>
+            <a href="../select_role.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
+                <i class="fa-solid fa-exchange-alt w-6"></i><span>เปลี่ยนบทบาท</span>
+            </a>
         </nav>
         <div class="p-4 border-t border-gray-800">
             <a href="../api/logout.php" class="block w-full text-center py-2 rounded border border-gray-700 hover:bg-red-600 hover:border-red-600 hover:text-white transition text-gray-400 text-sm">

@@ -11,20 +11,54 @@ require_once 'api/db.php';
 $userId = $_SESSION['user_id'];
 $isOfficerOrAdmin = false;
 
-// Check Role
-try {
-    $stmt = $conn->prepare("SELECT role_admin, role_staff, role_coordinator FROM users WHERE id = ?");
-    $stmt->execute([$userId]);
-    $u = $stmt->fetch();
-    if ($u) {
-        if ($u['role_admin'] || $u['role_staff']) {
-            $isOfficerOrAdmin = true;
-        }
-    }
-} catch (Exception $e) {}
+// Check Role from session
+$userRole = $_SESSION['role'] ?? '';
+if (is_array($userRole)) {
+    $isOfficerOrAdmin = in_array('admin', $userRole) || in_array('staff', $userRole) || in_array('secretary', $userRole);
+} else {
+    $isOfficerOrAdmin = ($userRole === 'admin' || $userRole === 'staff' || $userRole === 'secretary');
+}
 
-// For dev purposes, sometimes coordinator or secretary is the one setting it up
-// We'll trust $isOfficerOrAdmin boolean in the view to show/hide Add button.
+// Fetch System Settings
+$meetingSystemEnabled = true; // Default
+try {
+    $stmt = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'meeting_system_enabled'");
+    $result = $stmt->fetchColumn();
+    if ($result !== false) {
+        $meetingSystemEnabled = ($result === '1');
+    }
+} catch (Exception $e) {
+    // If table doesn't exist yet, we just ignore and use default
+}
+
+// If system is disabled, block everyone
+if (!$meetingSystemEnabled) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="th">
+    <head>
+        <meta charset="UTF-8">
+        <title>ระบบปิดใช้งาน - Research Portal</title>
+        <link rel="stylesheet" href="css/output.css">
+        <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>body { font-family: 'Sarabun', sans-serif; }</style>
+    </head>
+    <body class="bg-gray-100 h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-xl shadow-md text-center max-w-md w-full">
+            <div class="text-rose-500 mb-4">
+                <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">ระบบปิดให้บริการชั่วคราว</h2>
+            <p class="text-gray-600 mb-6">ขออภัย ระบบปฏิทินนัดหมายการประชุมถูกปิดการใช้งานในขณะนี้ กรุณาติดต่อผู้ดูแลระบบ</p>
+            <button onclick="window.history.back()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                กลับหน้าก่อนหน้า
+            </button>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="th">

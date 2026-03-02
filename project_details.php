@@ -133,7 +133,7 @@ $userName = $_SESSION['fullname'] ?? 'User';
                         <div id="step-5" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-gray-100 text-gray-400 border-gray-200 shrink-0">
                             <i class="fa-solid fa-check"></i>
                         </div>
-                        <div><div class="text-sm font-bold text-gray-700">อนุมัติแล้ว</div><div id="step-5-sub" class="text-xs text-gray-400"></div></div>
+                        <div><div class="text-sm font-bold text-gray-700">ผลการพิจารณา</div><div id="step-5-sub" class="text-xs text-gray-400"></div></div>
                     </div>
                 </div>
 

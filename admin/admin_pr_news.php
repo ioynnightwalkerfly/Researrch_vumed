@@ -197,6 +197,10 @@ function formatThaiDate($date, $months) {
             </a>
 
             <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Settings</div>
+            <a href="admin_settings.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
+                <i class="fa-solid fa-cogs w-6"></i>
+                <span>ตั้งค่าระบบ</span>
+            </a>
             <a href="../select_role.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
                 <i class="fa-solid fa-exchange-alt w-6"></i>
                 <span>เปลี่ยนบทบาท</span>
