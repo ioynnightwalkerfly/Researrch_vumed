@@ -9,7 +9,9 @@ require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
 use PHPMailer\PHPMailer\PHPMailer;
 
-header('Content-Type: application/json');
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+header('Content-Type: application/json; charset=utf-8');
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
@@ -105,13 +107,29 @@ try {
         
         if (!$projectId) throw new Exception("Project ID missing");
         if (!isset($_FILES['file'])) throw new Exception("No file uploaded");
+        $file = $_FILES['file'];
+        
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $errMessages = [
+                UPLOAD_ERR_INI_SIZE   => 'ขนาดไฟล์เกินที่กำหนดใน php.ini',
+                UPLOAD_ERR_FORM_SIZE  => 'ขนาดไฟล์เกินที่ฟอร์มกำหนด',
+                UPLOAD_ERR_PARTIAL    => 'ไฟล์ถูกอัปโหลดเพียงบางส่วน',
+                UPLOAD_ERR_NO_FILE    => 'ไม่มีไฟล์ถูกอัปโหลด',
+                UPLOAD_ERR_NO_TMP_DIR => 'ไม่พบโฟลเดอร์ชั่วคราวบนเซิร์ฟเวอร์',
+                UPLOAD_ERR_CANT_WRITE => 'ไม่สามารถเขียนไฟล์ลงบนดิสก์ได้',
+                UPLOAD_ERR_EXTENSION  => 'การอัปโหลดหยุดชะงักเกิดจาก PHP extension'
+            ];
+            $msg = $errMessages[$file['error']] ?? 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ (' . $file['error'] . ')';
+            throw new Exception("Upload Error: " . $msg);
+        }
 
         // Prepare Dir
         $targetDir = "../uploads/projects/$projectId/";
-        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-
-        // Process File
-        $file = $_FILES['file'];
+        if (!is_dir($targetDir)) {
+            if (!mkdir($targetDir, 0777, true)) {
+                throw new Exception("Failed to create directory: $targetDir");
+            }
+        }
 
         // Security: Limit file size to 10MB (10 * 1024 * 1024)
         if ($file['size'] > 10485760) {

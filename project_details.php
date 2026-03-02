@@ -108,12 +108,23 @@ $userName = $_SESSION['fullname'] ?? 'User';
                     </div>
                     <div class="hidden md:block w-12 h-0.5 bg-gray-200" id="line-3-4"></div>
 
-                    <!-- Step 4: ประธาน -->
+                    <!-- Step 4: ประชุมกรรมการจริยธรรม -->
                     <div class="flex items-center gap-3">
                         <div id="step-4" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-gray-100 text-gray-400 border-gray-200 shrink-0">
-                            <i class="fa-solid fa-gavel"></i>
+                            <i class="fa-solid fa-users-viewfinder"></i>
                         </div>
-                        <div><div class="text-sm font-bold text-gray-700">ประธานพิจารณา</div><div id="step-4-sub" class="text-xs text-gray-400"></div></div>
+                        <div>
+                            <div class="text-sm font-bold text-gray-700 flex items-center gap-1">
+                                ประชุมกรรมการจริยธรรม 
+                                <span id="meeting-round-badge" class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full hidden">ครั้งที่ 1</span>
+                            </div>
+                            <div id="step-4-sub" class="text-xs text-gray-400"></div>
+                            <div class="mt-1">
+                                <a href="meeting_calendar.php" class="text-[10px] bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 px-2 py-1 rounded inline-flex items-center gap-1 shadow-sm transition">
+                                    <i class="fa-solid fa-calendar-alt text-blue-500"></i> ดูตารางประชุม
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="hidden md:block w-12 h-0.5 bg-gray-200" id="line-4-5"></div>
 
@@ -265,7 +276,7 @@ $userName = $_SESSION['fullname'] ?? 'User';
                 'pending_approval': ['bg-yellow-100 text-yellow-700', 'รอตรวจสอบ'],
                 'pending_officer': ['bg-yellow-100 text-yellow-700', 'รอเจ้าหน้าที่ตรวจสอบ'],
                 'pending_secretary': ['bg-indigo-100 text-indigo-700', 'รอเลขาตรวจสอบ'],
-                'pending_chairman': ['bg-amber-100 text-amber-700', 'รอประธานพิจารณา'],
+                'pending_chairman': ['bg-amber-100 text-amber-700', 'รอประชุมกรรมการจริยธรรม'],
                 'working': ['bg-blue-100 text-blue-700', 'กำลังดำเนินการ'],
                 'published': ['bg-purple-100 text-purple-700', 'ตีพิมพ์แล้ว'],
                 'rejected': ['bg-red-100 text-red-700', 'ตีกลับ (เจ้าหน้าที่)'],
@@ -427,6 +438,18 @@ $userName = $_SESSION['fullname'] ?? 'User';
                         document.getElementById('rejection-issues').innerHTML = 'สิ่งที่ต้องแก้ไข: ' + issues.map(i => '<span class="inline-block bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs mr-1 mb-1">' + i + '</span>').join('');
                     }
                 } catch(e) {}
+            }
+
+            // Meeting Round Logic
+            const meetingBadge = document.getElementById('meeting-round-badge');
+            if (meetingBadge) {
+                // If the project was previously rejected and came back, or if backend provides it
+                const round = p.meeting_round || ((p.return_count > 0) ? p.return_count + 1 : 1);
+                
+                if (currentStep >= 3) {
+                    meetingBadge.innerText = 'ครั้งที่ ' + round;
+                    meetingBadge.classList.remove('hidden');
+                }
             }
         }
     </script>

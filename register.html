@@ -71,7 +71,7 @@
 
 <body class="flex flex-col min-h-screen">
 
-    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-4 px-6 shadow-md sticky top-0 z-50">
+    <header class="text-white py-4 px-6 shadow-md sticky top-0 z-50" style="background-color: #1D4ED8;">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <div class="bg-white/20 w-10 h-10 rounded-lg flex items-center justify-center backdrop-blur-sm">
@@ -152,7 +152,10 @@
                                     <option value="ผศ.">ผศ.</option>
                                     <option value="รศ.">รศ.</option>
                                     <option value="ศ.">ศ.</option>
+                                    <option value="อื่นๆ">อื่นๆ</option>
                                 </select>
+                                <input type="text" name="prefix_th_other" id="prefix_th_other"
+                                    class="input-field hidden-section mt-2" placeholder="ระบุคำนำหน้าของคุณ...">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -231,18 +234,17 @@
 
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-semibold mb-2">คุณสมบัติ</label>
-                                <div class="flex flex-wrap gap-4 text-sm">
-                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_health"
-                                            class="accent-indigo-500"> <span>บุคลากรด้านสุขภาพ</span></label>
-                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_social"
-                                            class="accent-indigo-500"> <span>นักสังคมศาสตร์/มนุษยศาสตร์</span></label>
-                                    <label class="flex items-center space-x-2"><input type="checkbox"
-                                            name="qual_non_med" class="accent-indigo-500">
-                                        <span>ผู้ที่ไม่ได้ประกอบวิชาชีพแพทย์</span></label>
-                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_comm"
-                                            class="accent-indigo-500"> <span>ตัวแทนชุมชน</span></label>
-                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_law"
-                                            class="accent-indigo-500"> <span>นักกฎหมาย</span></label>
+                                <div class="flex flex-col gap-3 text-sm">
+                                    <label class="flex items-start space-x-2"><input type="checkbox" name="qual_science"
+                                            class="accent-indigo-500 mt-1"> <span> วิทยาศาสตร์การแพทย์ (แพทย์, ทันตแพทย์, เภสัชศาสตร์, พยาบาลศาสตร์, เทคนิคการแพทย์, สัตวแพทยศาสตร์, กายภาพบำบัด และสาธารณสุขศาสตร์) </span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_sci_field"
+                                            class="accent-indigo-500"> <span>สายวิทยาศาสตร์ (นักวิทยาศาสตร์, วิศวกรรมศาสตร์)</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_non_sci"
+                                            class="accent-indigo-500"> <span>Non- science (ศึกษาศาสตร์ สังคมศาสตร์ นิติศาสตร์ ฯลฯ)</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_community"
+                                            class="accent-indigo-500"> <span>ชุมชน</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" name="qual_other"
+                                            class="accent-indigo-500"> <span>อื่นๆ</span></label>
                                 </div>
                             </div>
 
@@ -291,7 +293,7 @@
 
                     <div id="step-2" class="hidden-section p-6 md:p-10">
                         <h2 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">2.
-                            ข้อมูลการอบรม (Training)</h2>
+                            ข้อมูลการอบรมจริยธรรม</h2>
 
                         <div id="training-container" class="space-y-4">
                         </div>
@@ -491,6 +493,13 @@
                     setError(facOther, true);
                 }
 
+                // Check Prefix Other
+                const prefixSelect = document.getElementById('prefix_th');
+                const prefixOther = document.getElementById('prefix_th_other');
+                if (prefixSelect.value === 'อื่นๆ' && !prefixOther.value.trim()) {
+                    setError(prefixOther, true);
+                }
+
                 // 4. Check Roles (At least one)
                 const role1 = document.querySelector('[name="role_researcher"]');
                 const role2 = document.querySelector('[name="role_coordinator"]');
@@ -547,7 +556,21 @@
         const prefixMap = { 'นาย': 'Mr.', 'นาง': 'Mrs.', 'นางสาว': 'Ms.', 'ดร.': 'Dr.', 'ผศ.': 'Asst. Prof.', 'รศ.': 'Assoc. Prof.', 'ศ.': 'Prof.' };
         function autoFillPrefix() {
             const th = document.getElementById('prefix_th').value;
-            document.getElementById('prefix_eng').value = prefixMap[th] || '';
+            const otherInput = document.getElementById('prefix_th_other');
+            const engInput = document.getElementById('prefix_eng');
+            
+            if (th === 'อื่นๆ') {
+                otherInput.classList.remove('hidden-section');
+                otherInput.focus();
+                engInput.value = '';
+                engInput.readOnly = false;
+                engInput.classList.remove('bg-gray-100');
+            } else {
+                otherInput.classList.add('hidden-section');
+                engInput.value = prefixMap[th] || '';
+                engInput.readOnly = true;
+                engInput.classList.add('bg-gray-100');
+            }
         }
 
         function toggleOtherFaculty(select) {
@@ -600,7 +623,9 @@
             if (formData.get('role_coordinator')) roles.push('ผู้ประสานงาน');
 
             const idCard = formData.get('id_card_number');
-            const nameTh = `${formData.get('prefix_th')} ${formData.get('firstname_th')} ${formData.get('lastname_th')}`;
+            let prefixThVal = formData.get('prefix_th');
+            if (prefixThVal === 'อื่นๆ') prefixThVal = formData.get('prefix_th_other');
+            const nameTh = `${prefixThVal} ${formData.get('firstname_th')} ${formData.get('lastname_th')}`;
             const email = formData.get('email');
             const phone = formData.get('mobile_phone') || '-';
             const cvFile = document.getElementById('cv_file').files[0]?.name || 'ไม่ได้แนบไฟล์';

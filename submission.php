@@ -97,11 +97,9 @@ $userName = $_SESSION['fullname'] ?? 'User';
                             <label>1.1 ประเภทของโครงการวิจัย <span class="text-red-500">*</span></label>
                             <select name="research_type" class="bg-gray-50" required>
                                 <option value="">-- กรุณาเลือก --</option>
-                                <option value="clinical">โครงการทางคลินิก (Clinical)</option>
-                                <option value="social">โครงการทางสังคมศาสตร์ (Social)</option>
-                                <option value="exempt">เข้าข่ายขอยกเว้นการพิจารณา (Exempt)</option>
-                                <option value="expedited">เข้าข่ายพิจารณาแบบเร็ว (Expedited)</option>
-                                <option value="fullboard">เข้าข่ายพิจารณาแบบ Full Board</option>
+                                <option value="health_science">โครงการวิจัยทางวิทยาศาสตร์สุขภาพ</option>
+                                <option value="social_science">โครงการวิจัยทางสังคมศาสตร์</option>
+                                <option value="science">โครงการทางวิทยาศาสตร์</option>
                                 <option value="other">อื่นๆ</option>
                             </select>
                         </div>
