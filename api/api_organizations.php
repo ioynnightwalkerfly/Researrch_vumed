@@ -54,7 +54,7 @@ function fetchFromApi($url, $apiKey) {
             'Authorization: Bearer ' . $apiKey,
             'Accept: application/json',
         ],
-        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYPEER => false,
     ]);
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -111,7 +111,9 @@ function buildFromApiData($apiData, $categoryMap, $idMap) {
 
     // Include custom organizations (user-entered "อื่นๆ")
     $custom = $apiData['custom_organizations'] ?? [];
-    foreach ($custom as $name => $count) {
+    foreach ($custom as $org) {
+        $name = $org['name'];
+        $count = $org['records_count'];
         $id = 'CUSTOM_' . md5($name);
         if (!isset($seenIds[$id])) {
             $seenIds[$id] = true;
@@ -129,50 +131,128 @@ function buildFromApiData($apiData, $categoryMap, $idMap) {
         }
     }
 
-    return ['nodes' => $nodes, 'links' => $links];
+    // Filter out organizations with 0 records
+    $filteredNodes = [];
+    $filteredLinks = [];
+    $validIds = [];
+
+    foreach ($nodes as $n) {
+        if ($n['records_count'] > 0) {
+            $filteredNodes[] = $n;
+            $validIds[$n['id']] = true;
+        }
+    }
+
+    foreach ($links as $l) {
+        if (isset($validIds[$l['target']])) {
+            $filteredLinks[] = $l;
+        }
+    }
+
+    return ['nodes' => $filteredNodes, 'links' => $filteredLinks];
 }
 
-// ─── Fallback hardcoded data ───
-function getFallbackData() {
-    return [
-        'nodes' => [
-            ['id' => 'CMU',    'name' => 'ศูนย์วิชาการสารเสพติด ภาคเหนือ มช.', 'category' => 'academic', 'records_count' => 5, 'group' => 'A'],
-            ['id' => 'SUT',    'name' => 'มทส.',                               'category' => 'academic', 'records_count' => 2, 'group' => 'A'],
-            ['id' => 'MAHIDOL','name' => 'ม.มหิดล',                            'category' => 'academic', 'records_count' => 2, 'group' => 'A'],
-            ['id' => 'CHULA',  'name' => 'สถาบันวิจัยสังคม จุฬาฯ',             'category' => 'academic', 'records_count' => 3, 'group' => 'A'],
-            ['id' => 'NHF',    'name' => 'มูลนิธิสาธารณสุขแห่งชาติ (มสช.)',    'category' => 'gov',      'records_count' => 3, 'group' => 'A'],
-            ['id' => 'ONCB',   'name' => 'สำนักงาน ป.ป.ส.',                    'category' => 'gov',      'records_count' => 2, 'group' => 'A'],
-            ['id' => 'COJ',    'name' => 'สำนักงานศาลยุติธรรม',                 'category' => 'gov',      'records_count' => 2, 'group' => 'A'],
-            ['id' => 'BMC',    'name' => 'BMC Journal',                         'category' => 'journal',  'records_count' => 1, 'group' => 'B'],
-            ['id' => 'SURA_J', 'name' => 'Suranaree Journal',                   'category' => 'journal',  'records_count' => 1, 'group' => 'B'],
-            ['id' => 'OSONG',  'name' => 'Osong PHRP',                          'category' => 'journal',  'records_count' => 1, 'group' => 'B'],
-        ],
-        'links' => [
-            ['source' => 'VU', 'target' => 'CMU'],
-            ['source' => 'VU', 'target' => 'SUT'],
-            ['source' => 'VU', 'target' => 'MAHIDOL'],
-            ['source' => 'VU', 'target' => 'CHULA'],
-            ['source' => 'VU', 'target' => 'NHF'],
-            ['source' => 'VU', 'target' => 'ONCB'],
-            ['source' => 'VU', 'target' => 'COJ'],
-            ['source' => 'VU', 'target' => 'BMC'],
-            ['source' => 'VU', 'target' => 'SURA_J'],
-            ['source' => 'VU', 'target' => 'OSONG'],
-            ['source' => 'CMU', 'target' => 'ONCB'],
-        ],
-    ];
+// ─── Merging Logic ───
+function mergeOrganizationData($apiResult, $manualResult) {
+    $mergedNodes = [];
+    $mergedLinks = [];
+    $seenIds = [];
+
+    // Process API Data
+    foreach ($apiResult['nodes'] as $node) {
+        $mergedNodes[] = $node;
+        $seenIds[$node['id']] = count($mergedNodes) - 1;
+    }
+    foreach ($apiResult['links'] as $link) {
+        $mergedLinks[] = $link;
+    }
+
+    // Process Manual Data
+    foreach ($manualResult['nodes'] as $node) {
+        if (isset($seenIds[$node['id']])) {
+            $idx = $seenIds[$node['id']];
+            $mergedNodes[$idx]['records_count'] += $node['records_count'];
+        } else {
+            $mergedNodes[] = $node;
+            $seenIds[$node['id']] = count($mergedNodes) - 1;
+        }
+    }
+
+    foreach ($manualResult['links'] as $link) {
+        $isDuplicate = false;
+        foreach ($mergedLinks as $mLink) {
+            if (($mLink['source'] === $link['source'] && $mLink['target'] === $link['target']) ||
+                ($mLink['target'] === $link['source'] && $mLink['source'] === $link['target'])) {
+                $isDuplicate = true;
+                break;
+            }
+        }
+        if (!$isDuplicate) {
+             $sourceExists = $link['source'] === 'VU' || isset($seenIds[$link['source']]);
+             $targetExists = $link['target'] === 'VU' || isset($seenIds[$link['target']]);
+             if ($sourceExists && $targetExists) {
+                $mergedLinks[] = $link;
+             }
+        }
+    }
+
+    return ['nodes' => $mergedNodes, 'links' => $mergedLinks];
+}
+
+// ─── Fetch Manual Data from DB ───
+function getManualData() {
+    $nodes = [];
+    $links = [];
+    try {
+        require 'db.php';
+        $stmt = $conn->query("SELECT * FROM organizations_manual");
+        while ($row = $stmt->fetch()) {
+            $nodes[] = [
+                'id'            => $row['node_id'],
+                'name'          => $row['name'],
+                'category'      => $row['category'],
+                'records_count' => (int)$row['records_count'],
+                'group'         => $row['group_id'],
+            ];
+            $links[] = [
+                'source' => 'VU',
+                'target' => $row['node_id'],
+            ];
+        }
+        if (count($nodes) > 0) {
+            $links[] = ['source' => 'CMU', 'target' => 'ONCB'];
+        }
+    } catch (Exception $e) {
+        // Table doesn't exist or DB error, returns empty
+    }
+
+    return ['nodes' => $nodes, 'links' => $links];
 }
 
 // ─── Main ───
 try {
     $apiData = fetchFromApi($VUMEDHR_API_URL, $VUMEDHR_API_KEY);
+    $apiResult = ['nodes' => [], 'links' => []];
+    $hasApi = false;
     
     if ($apiData) {
-        $result = buildFromApiData($apiData, $categoryMap, $idMap);
+        $apiResult = buildFromApiData($apiData, $categoryMap, $idMap);
+        $hasApi = true;
+    }
+
+    $manualResult = getManualData();
+    $hasManual = count($manualResult['nodes']) > 0;
+
+    $result = mergeOrganizationData($apiResult, $manualResult);
+
+    if ($hasApi && $hasManual) {
+        $source = 'api_and_manual';
+    } else if ($hasApi) {
         $source = 'api';
+    } else if ($hasManual) {
+        $source = 'manual';
     } else {
-        $result = getFallbackData();
-        $source = 'fallback';
+        $source = 'none';
     }
 
     echo json_encode([
@@ -183,12 +263,12 @@ try {
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
 } catch (Exception $e) {
-    // On any error, return fallback
-    $result = getFallbackData();
+    $manualResult = getManualData();
     echo json_encode([
         'success' => true,
-        'source'  => 'fallback',
-        'nodes'   => $result['nodes'],
-        'links'   => $result['links'],
+        'source'  => 'manual_fallback',
+        'nodes'   => $manualResult['nodes'],
+        'links'   => $manualResult['links'],
+        'error'   => $e->getMessage()
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }

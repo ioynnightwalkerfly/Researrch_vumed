@@ -1060,16 +1060,13 @@
 
         function showSourceBadge(source) {
             const el = document.getElementById('networkSourceBadge');
-            if (!el) return;
-            if (source === 'api') {
-                el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ข้อมูลจาก VumedHR API</span>';
-            } else {
-                el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:600;background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">ข้อมูลจากระบบ (Fallback)</span>';
+            if (el) {
+                el.innerHTML = '';
             }
         }
 
         // Fetch organization data from proxy API
-        fetch('api/api_organizations.php')
+        fetch('api/api_organizations.php?_t=' + new Date().getTime())
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
