@@ -163,73 +163,7 @@ function formatThaiDateAcad($date, $months) {
 
 <body class="bg-gray-50 h-screen flex overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 text-white flex flex-col shadow-xl flex-shrink-0">
-        <div class="p-6 text-center border-b border-gray-800">
-            <h1 class="text-xl font-bold tracking-wider text-blue-400">ADMIN PANEL</h1>
-            <p class="text-xs text-gray-500 mt-1">System Control Center</p>
-        </div>
-        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-            <a href="admin_dashboard.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-chart-pie w-6"></i>
-                <span>ภาพรวมระบบ</span>
-            </a>
-            <a href="admin_users.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-users-gear w-6"></i>
-                <span>จัดการผู้ใช้งาน</span>
-            </a>
-            <a href="admin_projects.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-folder-tree w-6"></i>
-                <span>จัดการโครงการวิจัย</span>
-            </a>
-            <a href="admin_publication_stats.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-file-contract w-6"></i>
-                <span>บันทึกผลงานตีพิมพ์</span>
-            </a>
-            <a href="admin_pr_news.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-bullhorn w-6"></i>
-                <span>ข่าวประชาสัมพันธ์</span>
-            </a>
-            <a href="admin_activities.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-calendar-days w-6"></i>
-                <span>กิจกรรมฝ่ายฯ</span>
-            </a>
-            <a href="admin_academic_news.php" class="flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg transition shadow-md">
-                <i class="fa-solid fa-handshake-angle w-6"></i>
-                <span>ข่าวบริการวิชาการ</span>
-            </a>
-
-            <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Access Modes</div>
-            <a href="../officer/dashboard.php" target="_blank" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-user-shield w-6"></i>
-                <span>เข้าสู่โหมดเจ้าหน้าที่</span>
-            </a>
-
-            <div class="mt-8 px-4 text-xs font-bold text-gray-600 uppercase tracking-wider">Settings</div>
-            <a href="admin_settings.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-cogs w-6"></i>
-                <span>ตั้งค่าระบบ</span>
-            </a>
-            <a href="../select_role.php" class="flex items-center px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-                <i class="fa-solid fa-exchange-alt w-6"></i>
-                <span>เปลี่ยนบทบาท</span>
-            </a>
-        </nav>
-        <div class="p-4 border-t border-gray-800">
-             <div class="flex items-center gap-3 mb-4 px-2">
-                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">
-                    <?php echo (function_exists('mb_substr')) ? mb_substr($userName, 0, 1, 'UTF-8') : substr($userName, 0, 1); ?>
-                </div>
-                <div class="truncate">
-                    <div class="text-sm font-medium"><?php echo htmlspecialchars($userName); ?></div>
-                    <div class="text-xs text-green-400">Administrator</div>
-                </div>
-            </div>
-            <a href="../api/logout.php" class="block w-full text-center py-2 rounded border border-gray-700 hover:bg-red-600 hover:border-red-600 hover:text-white transition text-gray-400 text-sm">
-                <i class="fa-solid fa-sign-out-alt mr-2"></i> ออกจากระบบ
-            </a>
-        </div>
-    </aside>
+    <?php include 'includes/admin_sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="flex-grow flex flex-col h-screen overflow-hidden bg-gray-50">
