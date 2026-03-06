@@ -199,6 +199,11 @@
             max-width: 300px;
         }
 
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         /* Table */
         .data-table {
             width: 100%;
@@ -637,7 +642,15 @@
             <p class="text-white/40 text-sm">Organizational Collaboration Network — สามารถเลื่อนและซูมกราฟได้</p>
         </div>
         <div class="glass-card p-6 md:p-8">
-            <div id="chart-network" style="width: 100%; height: 650px;"></div>
+            <div id="chart-network" style="width: 100%; height: 650px;">
+                <div id="networkLoading" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+                    <div style="text-align:center;color:rgba(255,255,255,0.3);">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;margin:0 auto 12px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                        <p style="font-size:0.85rem;">กำลังโหลดข้อมูลเครือข่าย...</p>
+                    </div>
+                </div>
+            </div>
+            <div id="networkSourceBadge" style="text-align:right;margin-top:8px;"></div>
         </div>
     </section>
 
@@ -652,57 +665,17 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th style="width:30%">องค์กรความร่วมมือ</th>
-                            <th style="width:45%">รายละเอียดงาน</th>
+                            <th style="width:40%">องค์กรความร่วมมือ</th>
+                            <th style="width:20%; text-align:center;">จำนวนงาน</th>
                             <th>ประเภทหน่วยงาน</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>ศูนย์วิชาการสารเสพติดภาคเหนือ มช.</strong></td>
-                            <td>ประชุมและลงพื้นที่เก็บข้อมูลด้านยาเสพติด
-                                (ต่อเนื่อง)<em>ความร่วมมือหลักกับทีมวิจัยยาเสพติด</em></td>
-                            <td><span class="badge badge-academic">สถาบันการศึกษา</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>มูลนิธิสาธารณสุขแห่งชาติ (มสช.)</strong></td>
-                            <td>ประชุมวางแผนและพัฒนาระบบสุขภาพ<em>ความร่วมมือด้านนโยบายสาธารณสุข</em></td>
-                            <td><span class="badge badge-gov">องค์กร/มูลนิธิ</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>สำนักงาน ป.ป.ส.</strong></td>
-                            <td>วิทยากรและที่ปรึกษาด้านนโยบายยาเสพติด</td>
-                            <td><span class="badge badge-gov">หน่วยงานรัฐ</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>เครือข่ายมหาวิทยาลัย (มทส., มหิดล)</strong></td>
-                            <td>ผู้ทรงคุณวุฒิ, กรรมการวิทยานิพนธ์, ผู้เชี่ยวชาญเฉพาะด้าน</td>
-                            <td><span class="badge badge-academic">สถาบันการศึกษา</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>BMC Journal</strong></td>
-                            <td>Reviewer (ผู้ประเมินบทความวิชาการระดับนานาชาติ)</td>
-                            <td><span class="badge badge-journal">วารสารนานาชาติ</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>สถาบันวิจัยสังคม จุฬาลงกรณ์มหาวิทยาลัย</strong></td>
-                            <td>ประชุมความร่วมมือทางวิชาการและวิจัย</td>
-                            <td><span class="badge badge-academic">สถาบันการศึกษา</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>สำนักงานศาลยุติธรรม</strong></td>
-                            <td>ความร่วมมือทางวิชาการ / วิทยากรบรรยายพิเศษ</td>
-                            <td><span class="badge badge-gov">หน่วยงานรัฐ</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Suranaree Journal of Science and Technology</strong></td>
-                            <td>Reviewer (ผู้ประเมินบทความวิชาการ)</td>
-                            <td><span class="badge badge-journal">วารสารวิชาการ</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Osong Public Health and Research Perspectives</strong></td>
-                            <td>Reviewer (ผู้ประเมินบทความวิชาการระดับนานาชาติ)</td>
-                            <td><span class="badge badge-journal">วารสารนานาชาติ</span></td>
+                    <tbody id="collabTableBody">
+                        <tr id="collabLoading">
+                            <td colspan="4" style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;margin:0 auto 8px;display:block;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                                กำลังโหลดข้อมูล...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -945,7 +918,7 @@
         });
 
         // ==========================================
-        // 2. Network Graph — Collaboration
+        // 2. Network Graph + Collab Table — from API
         // ==========================================
         var chartNetwork = echarts.init(document.getElementById('chart-network'), null, { renderer: 'svg' });
 
@@ -954,93 +927,164 @@
         const svgIconGov = 'path://M12 2L2 7v14h20V7L12 2zm0 2.84L17.5 7.5v1H6.5v-1L12 4.84zM8 15v2H6v-2h2zm0-4v2H6v-2h2zm4 4v2h-2v-2h2zm0-4v2h-2v-2h2z';
         const svgIconJournal = 'path://M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z';
 
-        var nodes = [
-            { id: 'VU', name: 'คณะแพทยศาสตร์\nม.วงษ์ชวลิตกุล', category: 0, symbolSize: 85, value: 100, label: { fontSize: 13, fontWeight: 'bold' } },
-            { id: 'CMU', name: 'ศูนย์วิชาการสารเสพติด\nภาคเหนือ มช.', category: 1, symbolSize: 55, value: 20 },
-            { id: 'SUT', name: 'มทส.', category: 1, symbolSize: 45, value: 5 },
-            { id: 'MAHIDOL', name: 'ม.มหิดล', category: 1, symbolSize: 45, value: 5 },
-            { id: 'CHULA', name: 'สถาบันวิจัยสังคม\nจุฬาฯ', category: 1, symbolSize: 50, value: 10 },
-            { id: 'NHF', name: 'มูลนิธิสาธารณสุข\nแห่งชาติ (มสช.)', category: 2, symbolSize: 55, value: 10 },
-            { id: 'ONCB', name: 'สำนักงาน ป.ป.ส.', category: 2, symbolSize: 50, value: 8 },
-            { id: 'COJ', name: 'สำนักงาน\nศาลยุติธรรม', category: 2, symbolSize: 50, value: 8 },
-            { id: 'BMC', name: 'BMC Journal', category: 3, symbolSize: 40, value: 3 },
-            { id: 'SURA_J', name: 'Suranaree\nJournal', category: 3, symbolSize: 40, value: 3 },
-            { id: 'OSONG', name: 'Osong\nPHRP', category: 3, symbolSize: 40, value: 3 }
-        ];
+        const categoryIndexMap = { academic: 1, gov: 2, journal: 3 };
+        const categoryBadgeMap = {
+            academic: { cls: 'badge-academic', label: 'สถาบันการศึกษา' },
+            gov:      { cls: 'badge-gov',      label: 'หน่วยงานรัฐ/มูลนิธิ' },
+            journal:  { cls: 'badge-journal',   label: 'วารสารวิชาการ' }
+        };
 
-        var links = [
-            { source: 'VU', target: 'CMU', lineStyle: { width: 3 } },
-            { source: 'VU', target: 'NHF', lineStyle: { width: 2.5 } },
-            { source: 'VU', target: 'ONCB', lineStyle: { width: 2.5 } },
-            { source: 'VU', target: 'CHULA', lineStyle: { width: 2.5 } },
-            { source: 'VU', target: 'COJ', lineStyle: { width: 2.5 } },
-            { source: 'VU', target: 'SUT', lineStyle: { width: 2 } },
-            { source: 'VU', target: 'MAHIDOL', lineStyle: { width: 2 } },
-            { source: 'VU', target: 'BMC', lineStyle: { width: 2 } },
-            { source: 'VU', target: 'SURA_J', lineStyle: { width: 2 } },
-            { source: 'VU', target: 'OSONG', lineStyle: { width: 2 } },
-            { source: 'CMU', target: 'ONCB', lineStyle: { type: 'dashed', width: 1.5, color: 'rgba(255,255,255,0.15)' } }
-        ];
+        function buildNetworkChart(apiNodes, apiLinks) {
+            const maxCount = Math.max(1, ...apiNodes.map(n => n.records_count));
+            const chartEl = document.getElementById('chart-network');
+            const cx = chartEl.offsetWidth / 2;
+            const cy = chartEl.offsetHeight / 2;
+            const radius = Math.min(cx, cy) * 0.6;
 
-        chartNetwork.setOption({
-            tooltip: {
-                trigger: 'item', formatter: '{b}',
-                backgroundColor: 'rgba(8, 8, 16, 0.95)',
-                borderColor: 'rgba(255,255,255,0.1)',
-                textStyle: { color: '#e2e8f0', fontFamily: 'Noto Sans Thai' },
-                extraCssText: 'box-shadow: 0 8px 30px rgba(0,0,0,0.4); border-radius: 12px;'
-            },
-            legend: [{
-                data: ['Host (ศูนย์กลาง)', 'สถาบันการศึกษา', 'หน่วยงานรัฐ/มูลนิธิ', 'วารสารวิชาการ/นานาชาติ'],
-                bottom: '0%',
-                textStyle: { color: 'rgba(255,255,255,0.5)', fontFamily: 'Noto Sans Thai', fontSize: 12 },
-                icon: 'circle'
-            }],
-            categories: [
-                { name: 'Host (ศูนย์กลาง)', symbol: svgIconCore, itemStyle: { color: '#2dd4bf' } },
-                { name: 'สถาบันการศึกษา', symbol: svgIconAcademic, itemStyle: { color: '#0ea5e9' } },
-                { name: 'หน่วยงานรัฐ/มูลนิธิ', symbol: svgIconGov, itemStyle: { color: '#10b981' } },
-                { name: 'วารสารวิชาการ/นานาชาติ', symbol: svgIconJournal, itemStyle: { color: '#f59e0b' } }
-            ],
-            series: [{
-                type: 'graph',
-                layout: 'force',
-                data: nodes,
-                links: links,
+            // Build ECharts nodes: central VU + API org nodes arranged in circle
+            var nodes = [
+                { id: 'VU', name: 'คณะแพทยศาสตร์\nม.วงษ์ชวลิตกุล', category: 0, symbolSize: 85, value: 100, x: cx, y: cy, fixed: true, label: { fontSize: 13, fontWeight: 'bold' } }
+            ];
+            const total = apiNodes.length;
+            apiNodes.forEach((n, i) => {
+                const catIdx = categoryIndexMap[n.category] || 1;
+                const size = 35 + Math.round((n.records_count / maxCount) * 30);
+                const angle = (2 * Math.PI * i) / total - Math.PI / 2;
+                nodes.push({
+                    id: n.id,
+                    name: n.name,
+                    category: catIdx,
+                    symbolSize: size,
+                    value: n.records_count,
+                    x: cx + radius * Math.cos(angle),
+                    y: cy + radius * Math.sin(angle)
+                });
+            });
+
+            // Build ECharts links
+            var links = apiLinks.map(l => ({
+                source: l.source,
+                target: l.target,
+                lineStyle: { width: l.source === 'VU' ? 2.5 : 1.5, type: l.source === 'VU' ? 'solid' : 'dashed', color: l.source === 'VU' ? undefined : 'rgba(255,255,255,0.15)' }
+            }));
+
+            // Hide loading
+            var loadingEl = document.getElementById('networkLoading');
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            chartNetwork.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        if (params.dataType === 'node' && params.data.id !== 'VU') {
+                            return params.data.name + '<br>จำนวนงาน: <b>' + (params.data.value || 0) + '</b>';
+                        }
+                        return params.data.name || '';
+                    },
+                    backgroundColor: 'rgba(8, 8, 16, 0.95)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    textStyle: { color: '#e2e8f0', fontFamily: 'Noto Sans Thai' },
+                    extraCssText: 'box-shadow: 0 8px 30px rgba(0,0,0,0.4); border-radius: 12px;'
+                },
+                legend: [{
+                    data: ['Host (ศูนย์กลาง)', 'สถาบันการศึกษา', 'หน่วยงานรัฐ/มูลนิธิ', 'วารสารวิชาการ/นานาชาติ'],
+                    bottom: '0%',
+                    textStyle: { color: 'rgba(255,255,255,0.5)', fontFamily: 'Noto Sans Thai', fontSize: 12 },
+                    icon: 'circle'
+                }],
                 categories: [
-                    { name: 'Host (ศูนย์กลาง)' },
-                    { name: 'สถาบันการศึกษา' },
-                    { name: 'หน่วยงานรัฐ/มูลนิธิ' },
-                    { name: 'วารสารวิชาการ/นานาชาติ' }
+                    { name: 'Host (ศูนย์กลาง)', symbol: svgIconCore, itemStyle: { color: '#2dd4bf' } },
+                    { name: 'สถาบันการศึกษา', symbol: svgIconAcademic, itemStyle: { color: '#0ea5e9' } },
+                    { name: 'หน่วยงานรัฐ/มูลนิธิ', symbol: svgIconGov, itemStyle: { color: '#10b981' } },
+                    { name: 'วารสารวิชาการ/นานาชาติ', symbol: svgIconJournal, itemStyle: { color: '#f59e0b' } }
                 ],
-                roam: true,
-                label: {
-                    show: true,
-                    position: 'bottom',
-                    formatter: '{b}',
-                    distance: 10,
-                    color: 'rgba(255,255,255,0.7)',
-                    fontFamily: 'Noto Sans Thai',
-                    fontWeight: 500,
-                    fontSize: 11,
-                    textBorderColor: '#080810',
-                    textBorderWidth: 2
-                },
-                edgeSymbol: ['none', 'arrow'],
-                edgeSymbolSize: [4, 10],
-                lineStyle: {
-                    color: 'source',
-                    curveness: 0.2,
-                    opacity: 0.4
-                },
-                force: {
-                    repulsion: 1200,
-                    edgeLength: [120, 250],
-                    gravity: 0.1,
-                    friction: 0.2
+                series: [{
+                    type: 'graph',
+                    layout: 'force',
+                    data: nodes,
+                    links: links,
+                    categories: [
+                        { name: 'Host (ศูนย์กลาง)' },
+                        { name: 'สถาบันการศึกษา' },
+                        { name: 'หน่วยงานรัฐ/มูลนิธิ' },
+                        { name: 'วารสารวิชาการ/นานาชาติ' }
+                    ],
+                    roam: true,
+                    label: {
+                        show: true,
+                        position: 'bottom',
+                        formatter: '{b}',
+                        distance: 10,
+                        color: 'rgba(255,255,255,0.7)',
+                        fontFamily: 'Noto Sans Thai',
+                        fontWeight: 500,
+                        fontSize: 11,
+                        textBorderColor: '#080810',
+                        textBorderWidth: 2
+                    },
+                    edgeSymbol: ['none', 'arrow'],
+                    edgeSymbolSize: [4, 10],
+                    lineStyle: {
+                        color: 'source',
+                        curveness: 0.2,
+                        opacity: 0.4
+                    },
+                    force: {
+                        initLayout: 'none',
+                        repulsion: 1600,
+                        edgeLength: [150, 300],
+                        gravity: 0.08,
+                        friction: 0.15
+                    }
+                }]
+            });
+        }
+
+        function buildCollabTable(apiNodes) {
+            const tbody = document.getElementById('collabTableBody');
+            if (!apiNodes || apiNodes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;color:rgba(255,255,255,0.25);">ไม่พบข้อมูลหน่วยงาน</td></tr>';
+                return;
+            }
+            // Sort by records_count descending
+            const sorted = [...apiNodes].sort((a, b) => b.records_count - a.records_count);
+            tbody.innerHTML = sorted.map(n => {
+                const badge = categoryBadgeMap[n.category] || categoryBadgeMap.academic;
+                return `<tr>
+                    <td><strong>${n.name}</strong></td>
+                    <td style="text-align:center;">${n.records_count} งาน</td>
+                    <td><span class="badge ${badge.cls}">${badge.label}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function showSourceBadge(source) {
+            const el = document.getElementById('networkSourceBadge');
+            if (!el) return;
+            if (source === 'api') {
+                el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ข้อมูลจาก VumedHR API</span>';
+            } else {
+                el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:600;background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">ข้อมูลจากระบบ (Fallback)</span>';
+            }
+        }
+
+        // Fetch organization data from proxy API
+        fetch('api/api_organizations.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    buildNetworkChart(data.nodes, data.links);
+                    buildCollabTable(data.nodes);
+                    showSourceBadge(data.source);
                 }
-            }]
-        });
+            })
+            .catch(() => {
+                // On fetch error, remove loading spinners
+                var loadingEl = document.getElementById('networkLoading');
+                if (loadingEl) loadingEl.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.25);"><p style="font-size:0.85rem;">ไม่สามารถโหลดข้อมูลเครือข่ายได้</p></div>';
+                var tbody = document.getElementById('collabTableBody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;color:rgba(255,255,255,0.25);">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+            });
 
         // Resize handler
         window.addEventListener('resize', function () {
