@@ -8,36 +8,49 @@ header('Access-Control-Allow-Origin: *');
 $VUMEDHR_API_URL = 'https://vumedhr.vu.ac.th/vumedhr/public/api/get_organizations.php';
 $VUMEDHR_API_KEY = 'MHR-cf335b8cbe671f117fdb1a01e7a2af49';
 
-// ─── Category mapping for org names ───
-$categoryMap = [
-    'ศูนย์วิชาการสารเสพติด'           => 'academic',
-    'ภาคเหนือ มช.'                    => 'academic',
-    'มทส.'                            => 'academic',
-    'ม.มหิดล'                         => 'academic',
-    'สถาบันวิจัยสังคม'                 => 'academic',
-    'จุฬาฯ'                            => 'academic',
-    'มูลนิธิสาธารณสุขแห่งชาติ (มสช.)' => 'gov',
-    'สำนักงาน ป.ป.ส.'                 => 'gov',
-    'สำนักงานศาลยุติธรรม'              => 'gov',
-    'BMC Journal'                      => 'journal',
-    'Suranaree Journal'                => 'journal',
-    'Osong PHRP'                       => 'journal',
+// ─── Display name normalization (API/DB name → canonical display name) ───
+$displayNameMap = [
+    'มทส.'                                                    => 'มหาวิทยาลัยเทคโนโลยีสุรนารี',
+    'ม.มหิดล'                                                  => 'มหาวิทยาลัยมหิดล',
+    'ศูนย์วิชาการสารเสพติด'                                     => 'ศูนย์วิทยาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่',
+    'ภาคเหนือ มช.'                                             => 'ศูนย์วิทยาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่',
+    'ศูนย์วิชาการสารเสพติด ภาคเหนือ มช.'                       => 'ศูนย์วิทยาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่',
+    'ศูนย์วิชาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่'       => 'ศูนย์วิทยาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่',
+    'ศูนย์วิชาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม'        => 'ศูนย์วิทยาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่',
+    'สถาบันวิจัยสังคม'                                          => 'สถาบันวิจัยสังคม จุฬาฯ',
+    'จุฬาฯ'                                                     => 'สถาบันวิจัยสังคม จุฬาฯ',
+    'BMC Journal'                                               => 'BMC journal',
+    'Suranaree Journal'                                         => 'Suranaree Journal of Science and Technology',
 ];
 
-// ─── Node ID mapping ───
+// ─── Category mapping (display name → category) ───
+$categoryMap = [
+    'มหาวิทยาลัยเทคโนโลยีสุรนารี'                           => 'academic',
+    'มหาวิทยาลัยมหิดล'                                      => 'academic',
+    'ศูนย์วิทยาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่'   => 'academic',
+    'สถาบันวิจัยสังคม จุฬาฯ'                                 => 'academic',
+    'Karbala International Journal of Modern Science'        => 'academic',
+    'สำนักงานศาลยุติธรรม'                                    => 'gov',
+    'มูลนิธิสาธารณสุขแห่งชาติ (มสช.)'                        => 'gov',
+    'สำนักงาน ป.ป.ส.'                                       => 'gov',
+    'BMC journal'                                            => 'journal',
+    'Osong PHRP'                                             => 'journal',
+    'Suranaree Journal of Science and Technology'            => 'journal',
+];
+
+// ─── Node ID mapping (display name → node ID) ───
 $idMap = [
-    'ศูนย์วิชาการสารเสพติด'           => 'CMU',
-    'ภาคเหนือ มช.'                    => 'CMU_NORTH',
-    'มทส.'                            => 'SUT',
-    'ม.มหิดล'                         => 'MAHIDOL',
-    'สถาบันวิจัยสังคม'                 => 'CHULA',
-    'จุฬาฯ'                            => 'CHULA_U',
-    'มูลนิธิสาธารณสุขแห่งชาติ (มสช.)' => 'NHF',
-    'สำนักงาน ป.ป.ส.'                 => 'ONCB',
-    'สำนักงานศาลยุติธรรม'              => 'COJ',
-    'BMC Journal'                      => 'BMC',
-    'Suranaree Journal'                => 'SURA_J',
-    'Osong PHRP'                       => 'OSONG',
+    'มหาวิทยาลัยเทคโนโลยีสุรนารี'                           => 'SUT',
+    'มหาวิทยาลัยมหิดล'                                      => 'MAHIDOL',
+    'ศูนย์วิทยาการสารเสพติดภาคเหนือ มหาวิทยาลัยเชียงใหม่'   => 'CMU',
+    'สถาบันวิจัยสังคม จุฬาฯ'                                 => 'CHULA',
+    'Karbala International Journal of Modern Science'        => 'KARBALA',
+    'สำนักงานศาลยุติธรรม'                                    => 'COJ',
+    'มูลนิธิสาธารณสุขแห่งชาติ (มสช.)'                        => 'NHF',
+    'สำนักงาน ป.ป.ส.'                                       => 'ONCB',
+    'BMC journal'                                            => 'BMC',
+    'Osong PHRP'                                             => 'OSONG',
+    'Suranaree Journal of Science and Technology'            => 'SURA_J',
 ];
 
 // ─── Try fetching from VumedHR API ───
@@ -70,7 +83,7 @@ function fetchFromApi($url, $apiKey) {
 }
 
 // ─── Build nodes and links from API response ───
-function buildFromApiData($apiData, $categoryMap, $idMap) {
+function buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap) {
     $nodes = [];
     $links = [];
     $seenIds = [];
@@ -79,7 +92,9 @@ function buildFromApiData($apiData, $categoryMap, $idMap) {
     foreach ($groups as $groupKey => $group) {
         $orgs = $group['organizations'] ?? [];
         foreach ($orgs as $org) {
-            $name = $org['name'];
+            $rawName = $org['name'];
+            // Normalize display name
+            $name = $displayNameMap[$rawName] ?? $rawName;
             $id = $idMap[$name] ?? 'ORG_' . md5($name);
 
             if (isset($seenIds[$id])) {
@@ -112,23 +127,32 @@ function buildFromApiData($apiData, $categoryMap, $idMap) {
     // Include custom organizations (user-entered "อื่นๆ")
     $custom = $apiData['custom_organizations'] ?? [];
     foreach ($custom as $org) {
-        $name = $org['name'];
+        $rawName = $org['name'];
+        $name = $displayNameMap[$rawName] ?? $rawName;
         $count = $org['records_count'];
-        $id = 'CUSTOM_' . md5($name);
-        if (!isset($seenIds[$id])) {
-            $seenIds[$id] = true;
-            $nodes[] = [
-                'id'            => $id,
-                'name'          => $name,
-                'category'      => 'academic',
-                'records_count' => (int)$count,
-                'group'         => 'custom',
-            ];
-            $links[] = [
-                'source' => 'VU',
-                'target' => $id,
-            ];
+        $id = $idMap[$name] ?? 'CUSTOM_' . md5($name);
+        if (isset($seenIds[$id])) {
+            foreach ($nodes as &$n) {
+                if ($n['id'] === $id) {
+                    $n['records_count'] += (int)$count;
+                    break;
+                }
+            }
+            unset($n);
+            continue;
         }
+        $seenIds[$id] = true;
+        $nodes[] = [
+            'id'            => $id,
+            'name'          => $name,
+            'category'      => $categoryMap[$name] ?? 'academic',
+            'records_count' => (int)$count,
+            'group'         => 'custom',
+        ];
+        $links[] = [
+            'source' => 'VU',
+            'target' => $id,
+        ];
     }
 
     // Filter out organizations with 0 records
@@ -229,6 +253,56 @@ function getManualData() {
     return ['nodes' => $nodes, 'links' => $links];
 }
 
+// ─── Normalize final result (fix names from manual DB + merge duplicates) ───
+function normalizeResult($result, $displayNameMap, $categoryMap, $idMap) {
+    $normalized = [];
+    $links = [];
+    $seenIds = [];
+
+    foreach ($result['nodes'] as $node) {
+        $name = $displayNameMap[$node['name']] ?? $node['name'];
+        $id = $idMap[$name] ?? $node['id'];
+        $category = $categoryMap[$name] ?? $node['category'];
+
+        if (isset($seenIds[$id])) {
+            $idx = $seenIds[$id];
+            $normalized[$idx]['records_count'] += $node['records_count'];
+            continue;
+        }
+        $seenIds[$id] = count($normalized);
+        $normalized[] = [
+            'id'            => $id,
+            'name'          => $name,
+            'category'      => $category,
+            'records_count' => $node['records_count'],
+            'group'         => $node['group'],
+        ];
+    }
+
+    // Rebuild links with only valid node IDs
+    $validIds = array_flip(array_column($normalized, 'id'));
+    // Map old IDs to new IDs
+    $idRemap = [];
+    foreach ($result['nodes'] as $node) {
+        $name = $displayNameMap[$node['name']] ?? $node['name'];
+        $newId = $idMap[$name] ?? $node['id'];
+        $idRemap[$node['id']] = $newId;
+    }
+    $idRemap['VU'] = 'VU';
+    $seenLinks = [];
+    foreach ($result['links'] as $link) {
+        $src = $idRemap[$link['source']] ?? $link['source'];
+        $tgt = $idRemap[$link['target']] ?? $link['target'];
+        $key = $src . '->' . $tgt;
+        if (!isset($seenLinks[$key]) && ($src === 'VU' || isset($validIds[$src])) && isset($validIds[$tgt])) {
+            $seenLinks[$key] = true;
+            $links[] = ['source' => $src, 'target' => $tgt];
+        }
+    }
+
+    return ['nodes' => $normalized, 'links' => $links];
+}
+
 // ─── Main ───
 try {
     $apiData = fetchFromApi($VUMEDHR_API_URL, $VUMEDHR_API_KEY);
@@ -236,7 +310,7 @@ try {
     $hasApi = false;
     
     if ($apiData) {
-        $apiResult = buildFromApiData($apiData, $categoryMap, $idMap);
+        $apiResult = buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap);
         $hasApi = true;
     }
 
@@ -244,6 +318,7 @@ try {
     $hasManual = count($manualResult['nodes']) > 0;
 
     $result = mergeOrganizationData($apiResult, $manualResult);
+    $result = normalizeResult($result, $displayNameMap, $categoryMap, $idMap);
 
     if ($hasApi && $hasManual) {
         $source = 'api_and_manual';
