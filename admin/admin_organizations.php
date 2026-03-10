@@ -276,16 +276,21 @@ $userName = $_SESSION['fullname'];
                 
                 // Update Manual Stats
                 const orgs = data.data || [];
-                document.getElementById('stat-manual-total').innerText = `${orgs.length} รายการ`;
-                
                 let manualBreakdown = { 'academic': 0, 'gov': 0, 'journal': 0, 'other': 0 };
+                let totalManualRecords = 0;
                 orgs.forEach(o => {
+                    totalManualRecords += parseInt(o.records_count) || 0;
                     if (manualBreakdown[o.category] !== undefined) {
                         manualBreakdown[o.category]++;
                     } else {
                         manualBreakdown['other']++;
                     }
                 });
+                
+                document.getElementById('stat-manual-total').innerHTML = `
+                    <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">${orgs.length} องค์กร</span>
+                    <span class="bg-gray-600 text-white px-2 py-1 rounded text-xs ml-1">${totalManualRecords} เรคคอร์ด</span>
+                `;
                 
                 document.getElementById('stat-manual-breakdown').innerHTML = `
                     <div class="flex flex-col bg-gray-50 p-2 rounded border border-gray-100"><span class="text-xs text-gray-500 mb-1">สถาบันการศึกษา</span><span class="font-bold text-lg text-blue-700">${manualBreakdown.academic}</span></div>
@@ -338,6 +343,8 @@ $userName = $_SESSION['fullname'];
                 
                 let nodes = [];
                 let apiBreakdown = {};
+                let totalAPIRecords = data.total_records_with_org || 0; // ยึดตามเลขรวมที่ API ส่งมา
+
                 // Extract from API groups
                 if(data.groups) {
                     Object.keys(data.groups).forEach(gKey => {
@@ -374,7 +381,10 @@ $userName = $_SESSION['fullname'];
                 }
                 
                 // Update API Stats
-                document.getElementById('stat-api-total').innerText = `${nodes.length} รายการ`;
+                document.getElementById('stat-api-total').innerHTML = `
+                    <span class="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-bold">${nodes.length} องค์กร</span>
+                    <span class="bg-gray-600 text-white px-2 py-1 rounded text-xs ml-1">${totalAPIRecords} เรคคอร์ด (จาก VumedHR)</span>
+                `;
                 let breakdownHtml = '';
                 if (Object.keys(apiBreakdown).length > 0) {
                     for (const [group, count] of Object.entries(apiBreakdown)) {

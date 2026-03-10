@@ -83,7 +83,7 @@ function fetchFromApi($url, $apiKey) {
 }
 
 // ─── Build nodes and links from API response ───
-function buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap) {
+function buildFromApiData($apiData) {
     $nodes = [];
     $links = [];
     $seenIds = [];
@@ -92,16 +92,14 @@ function buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap) {
     foreach ($groups as $groupKey => $group) {
         $orgs = $group['organizations'] ?? [];
         foreach ($orgs as $org) {
-            $rawName = $org['name'];
-            // Normalize display name
-            $name = $displayNameMap[$rawName] ?? $rawName;
-            $id = $idMap[$name] ?? 'ORG_' . md5($name);
+            $name = $org['name'];
+            $id = $org['org_id'] ?? 'ORG_' . md5($name);
+            $category = $org['category'] ?? 'academic';
 
             if (isset($seenIds[$id])) {
-                // Accumulate records count if same org appears in multiple groups
                 foreach ($nodes as &$n) {
                     if ($n['id'] === $id) {
-                        $n['records_count'] += $org['records_count'];
+                        $n['records_count'] += (int)$org['records_count'];
                         break;
                     }
                 }
@@ -113,7 +111,7 @@ function buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap) {
             $nodes[] = [
                 'id'            => $id,
                 'name'          => $name,
-                'category'      => $categoryMap[$name] ?? 'academic',
+                'category'      => $category,
                 'records_count' => (int)$org['records_count'],
                 'group'         => $groupKey,
             ];
@@ -127,10 +125,11 @@ function buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap) {
     // Include custom organizations (user-entered "อื่นๆ")
     $custom = $apiData['custom_organizations'] ?? [];
     foreach ($custom as $org) {
-        $rawName = $org['name'];
-        $name = $displayNameMap[$rawName] ?? $rawName;
+        $name = $org['name'];
         $count = $org['records_count'];
-        $id = $idMap[$name] ?? 'CUSTOM_' . md5($name);
+        $id = $org['org_id'] ?? 'CUSTOM_' . md5($name);
+        $category = $org['category'] ?? 'other';
+
         if (isset($seenIds[$id])) {
             foreach ($nodes as &$n) {
                 if ($n['id'] === $id) {
@@ -145,7 +144,7 @@ function buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap) {
         $nodes[] = [
             'id'            => $id,
             'name'          => $name,
-            'category'      => $categoryMap[$name] ?? 'academic',
+            'category'      => $category,
             'records_count' => (int)$count,
             'group'         => 'custom',
         ];
@@ -253,16 +252,14 @@ function getManualData() {
     return ['nodes' => $nodes, 'links' => $links];
 }
 
-// ─── Normalize final result (fix names from manual DB + merge duplicates) ───
-function normalizeResult($result, $displayNameMap, $categoryMap, $idMap) {
+// ─── Normalize final result (merge duplicate IDs) ───
+function normalizeResult($result) {
     $normalized = [];
     $links = [];
     $seenIds = [];
 
     foreach ($result['nodes'] as $node) {
-        $name = $displayNameMap[$node['name']] ?? $node['name'];
-        $id = $idMap[$name] ?? $node['id'];
-        $category = $categoryMap[$name] ?? $node['category'];
+        $id = $node['id'];
 
         if (isset($seenIds[$id])) {
             $idx = $seenIds[$id];
@@ -270,29 +267,16 @@ function normalizeResult($result, $displayNameMap, $categoryMap, $idMap) {
             continue;
         }
         $seenIds[$id] = count($normalized);
-        $normalized[] = [
-            'id'            => $id,
-            'name'          => $name,
-            'category'      => $category,
-            'records_count' => $node['records_count'],
-            'group'         => $node['group'],
-        ];
+        $normalized[] = $node;
     }
 
     // Rebuild links with only valid node IDs
     $validIds = array_flip(array_column($normalized, 'id'));
-    // Map old IDs to new IDs
-    $idRemap = [];
-    foreach ($result['nodes'] as $node) {
-        $name = $displayNameMap[$node['name']] ?? $node['name'];
-        $newId = $idMap[$name] ?? $node['id'];
-        $idRemap[$node['id']] = $newId;
-    }
-    $idRemap['VU'] = 'VU';
+    
     $seenLinks = [];
     foreach ($result['links'] as $link) {
-        $src = $idRemap[$link['source']] ?? $link['source'];
-        $tgt = $idRemap[$link['target']] ?? $link['target'];
+        $src = $link['source'];
+        $tgt = $link['target'];
         $key = $src . '->' . $tgt;
         if (!isset($seenLinks[$key]) && ($src === 'VU' || isset($validIds[$src])) && isset($validIds[$tgt])) {
             $seenLinks[$key] = true;
@@ -310,7 +294,7 @@ try {
     $hasApi = false;
     
     if ($apiData) {
-        $apiResult = buildFromApiData($apiData, $categoryMap, $idMap, $displayNameMap);
+        $apiResult = buildFromApiData($apiData);
         $hasApi = true;
     }
 
@@ -318,7 +302,7 @@ try {
     $hasManual = count($manualResult['nodes']) > 0;
 
     $result = mergeOrganizationData($apiResult, $manualResult);
-    $result = normalizeResult($result, $displayNameMap, $categoryMap, $idMap);
+    $result = normalizeResult($result);
 
     if ($hasApi && $hasManual) {
         $source = 'api_and_manual';
