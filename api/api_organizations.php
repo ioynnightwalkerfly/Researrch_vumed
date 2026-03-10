@@ -83,7 +83,7 @@ function fetchFromApi($url, $apiKey) {
 }
 
 // ─── Build nodes and links from API response ───
-function buildFromApiData($apiData) {
+function buildFromApiData($apiData, $displayNameMap) {
     $nodes = [];
     $links = [];
     $seenIds = [];
@@ -92,8 +92,9 @@ function buildFromApiData($apiData) {
     foreach ($groups as $groupKey => $group) {
         $orgs = $group['organizations'] ?? [];
         foreach ($orgs as $org) {
-            $name = $org['name'];
-            $id = $org['org_id'] ?? 'ORG_' . md5($name);
+            $rawName = $org['name'];
+            $name = $displayNameMap[$rawName] ?? $rawName;
+            $id = $org['org_id'] ?? 'ORG_' . md5($rawName);
             $category = $org['category'] ?? 'academic';
 
             if (isset($seenIds[$id])) {
@@ -125,9 +126,10 @@ function buildFromApiData($apiData) {
     // Include custom organizations (user-entered "อื่นๆ")
     $custom = $apiData['custom_organizations'] ?? [];
     foreach ($custom as $org) {
-        $name = $org['name'];
+        $rawName = $org['name'];
+        $name = $displayNameMap[$rawName] ?? $rawName;
         $count = $org['records_count'];
-        $id = $org['org_id'] ?? 'CUSTOM_' . md5($name);
+        $id = $org['org_id'] ?? 'CUSTOM_' . md5($rawName);
         $category = $org['category'] ?? 'other';
 
         if (isset($seenIds[$id])) {
@@ -252,14 +254,16 @@ function getManualData() {
     return ['nodes' => $nodes, 'links' => $links];
 }
 
-// ─── Normalize final result (merge duplicate IDs) ───
-function normalizeResult($result) {
+// ─── Normalize final result (merge duplicate IDs and ensure display names) ───
+function normalizeResult($result, $displayNameMap) {
     $normalized = [];
     $links = [];
     $seenIds = [];
 
     foreach ($result['nodes'] as $node) {
         $id = $node['id'];
+        $rawName = $node['name'];
+        $node['name'] = $displayNameMap[$rawName] ?? $rawName;
 
         if (isset($seenIds[$id])) {
             $idx = $seenIds[$id];
@@ -294,7 +298,7 @@ try {
     $hasApi = false;
     
     if ($apiData) {
-        $apiResult = buildFromApiData($apiData);
+        $apiResult = buildFromApiData($apiData, $displayNameMap);
         $hasApi = true;
     }
 
@@ -302,7 +306,7 @@ try {
     $hasManual = count($manualResult['nodes']) > 0;
 
     $result = mergeOrganizationData($apiResult, $manualResult);
-    $result = normalizeResult($result);
+    $result = normalizeResult($result, $displayNameMap);
 
     if ($hasApi && $hasManual) {
         $source = 'api_and_manual';
