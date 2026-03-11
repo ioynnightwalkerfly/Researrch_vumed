@@ -393,6 +393,16 @@ $userName = $_SESSION['fullname'];
                 } else {
                     breakdownHtml = '<div class="text-sm text-gray-500 col-span-2 p-2 text-center bg-gray-50 rounded border border-gray-100">ไม่มีข้อมูลแยกกลุ่ม</div>';
                 }
+
+                // Append Service Types Breakdown
+                if (data.service_types && data.service_types.length > 0) {
+                    breakdownHtml += '<div class="col-span-full border-t border-gray-200 mt-2 pt-2"><h4 class="text-xs font-bold text-gray-500 mb-2">สัดส่วนประเภทงาน (Service Types)</h4><div class="grid grid-cols-2 md:grid-cols-3 gap-2">';
+                    data.service_types.forEach(st => {
+                        breakdownHtml += `<div class="flex flex-col bg-purple-50 p-2 rounded border border-purple-100"><span class="text-xs text-gray-500 mb-1 leading-tight">${st.name}</span><span class="font-bold text-lg text-purple-700">${st.records_count}</span></div>`;
+                    });
+                    breakdownHtml += '</div></div>';
+                }
+
                 document.getElementById('stat-api-breakdown').innerHTML = breakdownHtml;
 
                 if(nodes.length === 0) {

@@ -295,10 +295,12 @@ function normalizeResult($result, $displayNameMap) {
 try {
     $apiData = fetchFromApi($VUMEDHR_API_URL, $VUMEDHR_API_KEY);
     $apiResult = ['nodes' => [], 'links' => []];
+    $serviceTypes = [];
     $hasApi = false;
     
     if ($apiData) {
         $apiResult = buildFromApiData($apiData, $displayNameMap);
+        $serviceTypes = $apiData['service_types'] ?? [];
         $hasApi = true;
     }
 
@@ -319,10 +321,11 @@ try {
     }
 
     echo json_encode([
-        'success' => true,
-        'source'  => $source,
-        'nodes'   => $result['nodes'],
-        'links'   => $result['links'],
+        'success'       => true,
+        'source'        => $source,
+        'nodes'         => $result['nodes'],
+        'links'         => $result['links'],
+        'service_types' => $serviceTypes
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
 } catch (Exception $e) {
